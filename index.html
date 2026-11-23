@@ -138,6 +138,29 @@ section{padding:clamp(64px,8vw,112px) 0;border-top:1px solid var(--line)}
 .links a:hover b{color:var(--blue)}
 footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
 
+/* Certificates */
+.certs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(18px,2.4vw,28px);list-style:none;margin:0;padding:0}
+.cert{margin:0}
+.cert button{all:unset;box-sizing:border-box;display:block;width:100%;cursor:zoom-in;border:1px solid var(--line);border-radius:16px;background:var(--paper);overflow:hidden;transition:border-color .2s,box-shadow .2s,transform .2s}
+.cert button:hover{border-color:var(--blue-soft);box-shadow:0 24px 48px -30px rgba(36,87,245,.55);transform:translateY(-2px)}
+.cert button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
+.cert .thumb{aspect-ratio:810/571;background:var(--blue-wash);border-bottom:1px solid var(--line)}
+.cert img{width:100%;height:100%;object-fit:cover;display:block}
+.cert .meta{padding:16px 18px 18px}
+.cert h3{font-size:17px;font-weight:700;line-height:1.3;letter-spacing:-0.01em}
+.cert .by{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:14.5px;color:var(--slate)}
+.cert .by time{font-family:var(--mono);font-size:13px;flex-shrink:0}
+.viewer{border:0;padding:0;background:transparent;max-width:min(1100px,94vw);width:100%;color:var(--paper)}
+.viewer::backdrop{background:rgba(8,12,24,.86);backdrop-filter:blur(4px)}
+.viewer figure{margin:0}
+.viewer img{display:block;width:100%;max-height:78vh;object-fit:contain;border-radius:10px;background:#fff}
+.viewer figcaption{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:12px;margin-top:14px;font-size:15px}
+.viewer figcaption b{font-family:var(--display);font-size:18px}
+.viewer figcaption span{color:#B9C3D8}
+.viewer .ctrl{display:flex;gap:8px}
+.viewer .ctrl button,.viewer .ctrl a{font:inherit;font-size:14px;font-weight:600;color:var(--paper);background:none;border:1.5px solid rgba(255,255,255,.5);border-radius:999px;padding:8px 14px;cursor:pointer;text-decoration:none}
+.viewer .ctrl button:hover,.viewer .ctrl a:hover{background:var(--paper);color:var(--ink)}
+
 /* Responsive */
 @media (max-width:920px){
   .hero .wrap,.head,.work-grid,.split{grid-template-columns:minmax(0,1fr)}
@@ -147,6 +170,7 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   .links{grid-template-columns:repeat(2,minmax(0,1fr))}
   .links a:nth-child(3){padding-left:0;border-left:0}
   .timeline li{grid-template-columns:minmax(0,1fr);gap:6px}
+  .certs{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media (max-width:560px){
   .nav ul{display:none}
@@ -154,11 +178,13 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   .lens,.lens + .lens{padding-left:0;border-left:0;border-bottom:1px solid var(--line);padding-bottom:20px}
   .links a,.links a + a{padding-left:0;border-left:0}
   .bar-row{grid-template-columns:56px minmax(0,1fr) 78px;gap:10px}
+  .certs{grid-template-columns:minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .fill{transition:none}
   .timeline li.now .years::after{animation:none}
+  .cert button,.cert button:hover{transition:none;transform:none}
 }
 </style>
 </head>
@@ -171,6 +197,7 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
       <li><a href="#story">Story</a></li>
       <li><a href="#work">AI work</a></li>
       <li><a href="#career">Career</a></li>
+      <li><a href="#certificates">Certificates</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
   </div>
@@ -335,6 +362,30 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   </div>
 </section>
 
+<section id="certificates">
+  <div class="wrap">
+    <div class="head">
+      <h2>Certificates</h2>
+      <p>Programs and courses I have completed. Click any certificate to see it full size.</p>
+    </div>
+    <ul class="certs" id="certs"></ul>
+  </div>
+  <dialog class="viewer" id="viewer" aria-label="Certificate viewer">
+    <figure>
+      <img id="viewer-img" alt="">
+      <figcaption>
+        <div><b id="viewer-title"></b><br><span id="viewer-by"></span></div>
+        <div class="ctrl">
+          <button type="button" id="viewer-prev" aria-label="Previous certificate">← Prev</button>
+          <button type="button" id="viewer-next" aria-label="Next certificate">Next →</button>
+          <a id="viewer-open" target="_blank" rel="noopener">Open</a>
+          <button type="button" id="viewer-close" aria-label="Close">Close ✕</button>
+        </div>
+      </figcaption>
+    </figure>
+  </dialog>
+</section>
+
 <section id="contact" class="contact">
   <div class="wrap">
     <h2>Scaling a SaaS product? Let's talk.</h2>
@@ -468,6 +519,54 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
     }, {threshold:0.4});
     io.observe(term);
   }
+})();
+</script>
+<script>
+// Certificates: add one line per certificate (image goes in images/certificates/).
+const CERTIFICATES = [
+  { img: "images/certificates/iit-delhi-ai-mal.png", title: "Professional Certificate Program in Generative AI, Machine Learning, and Intelligent Automation", issuer: "IHFC, IIT Delhi", date: "Oct 2026" },
+];
+
+(() => {
+  const list = document.getElementById('certs');
+  const dlg = document.getElementById('viewer');
+  const img = document.getElementById('viewer-img');
+  const title = document.getElementById('viewer-title');
+  const by = document.getElementById('viewer-by');
+  const open = document.getElementById('viewer-open');
+  let cur = 0;
+
+  CERTIFICATES.forEach((c, i) => {
+    const li = document.createElement('li');
+    li.className = 'cert';
+    li.innerHTML = '<button type="button"><div class="thumb"><img loading="lazy" alt=""></div>' +
+      '<div class="meta"><h3></h3><div class="by"><span></span><time></time></div></div></button>';
+    li.querySelector('img').src = c.img;
+    li.querySelector('img').alt = 'Certificate: ' + c.title;
+    li.querySelector('h3').textContent = c.title;
+    li.querySelector('.by span').textContent = c.issuer;
+    li.querySelector('time').textContent = c.date || '';
+    li.querySelector('button').addEventListener('click', () => show(i));
+    list.appendChild(li);
+  });
+
+  function show(i) {
+    cur = (i + CERTIFICATES.length) % CERTIFICATES.length;
+    const c = CERTIFICATES[cur];
+    img.src = c.img; img.alt = 'Certificate: ' + c.title;
+    title.textContent = c.title;
+    by.textContent = c.issuer + (c.date ? ' · ' + c.date : '') + '  (' + (cur + 1) + ' of ' + CERTIFICATES.length + ')';
+    open.href = c.img;
+    if (!dlg.open) dlg.showModal();
+  }
+  document.getElementById('viewer-prev').onclick = () => show(cur - 1);
+  document.getElementById('viewer-next').onclick = () => show(cur + 1);
+  document.getElementById('viewer-close').onclick = () => dlg.close();
+  dlg.addEventListener('click', e => { if (e.target === dlg) dlg.close(); });
+  dlg.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft') show(cur - 1);
+    if (e.key === 'ArrowRight') show(cur + 1);
+  });
 })();
 </script>
 </body>
