@@ -161,8 +161,23 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
 .cert button{all:unset;box-sizing:border-box;display:block;width:100%;cursor:zoom-in;border:1px solid var(--line);border-radius:16px;background:var(--paper);overflow:hidden;transition:border-color .2s,box-shadow .2s,transform .2s}
 .cert button:hover{border-color:var(--blue-soft);box-shadow:0 24px 48px -30px rgba(36,87,245,.55);transform:translateY(-2px)}
 .cert button:focus-visible{outline:2px solid var(--blue);outline-offset:3px}
-.cert .thumb{aspect-ratio:810/571;background:var(--blue-wash);border-bottom:1px solid var(--line)}
-.cert img{width:100%;height:100%;object-fit:cover;display:block}
+.cert .thumb{aspect-ratio:4/3;background:#f3ecdf;border-bottom:1px solid var(--line);padding:14px;display:flex;align-items:center;justify-content:center}
+.cert img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain;display:block;border-radius:4px;box-shadow:0 6px 18px -10px rgba(29,36,51,.45)}
+.cert .kind{display:inline-block;margin-bottom:8px;font-size:11px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;padding:4px 9px;border-radius:99px;background:var(--blue-wash);color:var(--blue)}
+.cert .kind.award{background:var(--accent-soft);color:#b35c00}
+.tabs{display:flex;flex-wrap:wrap;gap:10px;margin:-20px 0 28px}
+.tabs button{font:inherit;font-size:15px;font-weight:600;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:var(--paper);color:var(--slate);cursor:pointer}
+.tabs button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+.tabs button span{font-weight:500;opacity:.7;margin-left:4px}
+.badges-block{margin-top:clamp(40px,5vw,56px)}
+.badges-block h3{font-size:22px;font-weight:700}
+.badges-block > p{color:var(--slate);margin-top:6px;font-size:16px}
+.badges{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:clamp(12px,1.6vw,18px);list-style:none;margin:20px 0 0;padding:0}
+.badge{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:18px 14px 16px;text-align:center}
+.badge img{width:84px;height:84px;border-radius:50%;display:block;margin:0 auto;object-fit:cover}
+.badge b{display:block;margin-top:12px;font-size:15px;line-height:1.3;font-family:var(--display)}
+.badge time{display:block;margin-top:6px;font-family:var(--mono);font-size:12.5px;color:var(--slate)}
+[hidden]{display:none!important}
 .cert .meta{padding:16px 18px 18px}
 .cert h3{font-size:17px;font-weight:700;line-height:1.3;letter-spacing:-0.01em}
 .cert .by{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:14.5px;color:var(--slate)}
@@ -190,6 +205,7 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   .links{grid-template-columns:repeat(2,minmax(0,1fr))}
   .links a:nth-child(3){padding-left:0;border-left:0}
   .certs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .badges{grid-template-columns:repeat(3,minmax(0,1fr))}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .posts{grid-template-columns:minmax(0,1fr)}
 }
@@ -200,6 +216,7 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   .links a,.links a + a{padding-left:0;border-left:0}
   .bar-row{grid-template-columns:56px minmax(0,1fr) 78px;gap:10px}
   .certs{grid-template-columns:minmax(0,1fr)}
+  .badges{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stats{grid-template-columns:minmax(0,1fr)}
 }
 @media (prefers-reduced-motion:reduce){
@@ -374,8 +391,8 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
       <div>
         <h3>Recognition</h3>
         <ul class="list">
-          <li><span>Hackathon 4.0, 1st place</span><span>2019</span></li>
-          <li><span>Hackathon winner, twice</span><span>Out of 10 teams</span></li>
+          <li><span>Hackathon 5.0 winner (Team Atom)</span><span>Apr 2019</span></li>
+          <li><span>Hackathon 4.0 winner (The Surgical Strike)</span><span>Jan 2019</span></li>
           <li><span>Led Hackathon 3.0</span><span>Event lead</span></li>
           <li><span>Employee of the Month</span><span>Multiple times</span></li>
         </ul>
@@ -410,10 +427,21 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
 <section id="certificates">
   <div class="wrap">
     <div class="head">
-      <h2>Certificates</h2>
-      <p>Programs and courses I have completed. Click any certificate to see it full size.</p>
+      <h2>Certificates, awards &amp; badges</h2>
+      <p>Programs and courses I have completed, hackathon wins, and Google Developer Program badges. Click any certificate to see it full size.</p>
+    </div>
+    <div class="tabs" id="cert-tabs" role="group" aria-label="Filter">
+      <button type="button" data-k="all" aria-pressed="true">All</button>
+      <button type="button" data-k="cert" aria-pressed="false">Certificates</button>
+      <button type="button" data-k="award" aria-pressed="false">Awards</button>
+      <button type="button" data-k="badge" aria-pressed="false">Badges</button>
     </div>
     <ul class="certs" id="certs"></ul>
+    <div class="badges-block" id="badges-block">
+      <h3>Google Developer Program badges</h3>
+      <p>Earned on the Google Developer Program profile.</p>
+      <ul class="badges" id="badges"></ul>
+    </div>
   </div>
   <dialog class="viewer" id="viewer" aria-label="Certificate viewer">
     <figure>
@@ -567,9 +595,29 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
 })();
 </script>
 <script>
-// Certificates: add one line per certificate (image goes in images/certificates/).
+// Certificates and awards: one line each, newest first. Images: images/certificates/web/<slug>.webp (full, max 1600 px)
+// + <slug>-thumb.webp (640 px), made from the originals in images/certificates/certificates/. `orig` = original file / verify link.
+const W = "images/certificates/web/", O = "images/certificates/certificates/";
 const CERTIFICATES = [
-  { img: "images/certificates/iit-delhi-ai-mal.png", title: "Professional Certificate Program in Generative AI, Machine Learning, and Intelligent Automation", issuer: "IHFC, IIT Delhi", date: "Oct 2026" },
+  { slug: "ihfc-iitd-genai-ml-automation", kind: "cert", title: "Professional Certificate Program in Generative AI, Machine Learning, and Intelligent Automation", issuer: "IHFC, IIT Delhi", date: "Oct 2026", orig: O + "master.pdf" },
+  { slug: "simplilearn-machine-learning", kind: "cert", title: "IHFC AIML: Machine Learning", issuer: "Simplilearn", date: "Sep 2026", orig: O + "simpli/AI-Machinelearning.pdf" },
+  { slug: "simplilearn-applied-data-science-python", kind: "cert", title: "IHFC AIML: Applied Data Science with Python", issuer: "Simplilearn", date: "Jul 2026", orig: O + "simpli/data_science.pdf" },
+  { slug: "simplilearn-python-refresher-ai", kind: "cert", title: "IHFC AIML: Python Refresher with AI", issuer: "Simplilearn", date: "Jun 2026", orig: O + "simpli/AI-ML-DS_Python Refresher with AI_2026.pdf" },
+  { slug: "simplilearn-maths-statistics", kind: "cert", title: "IHFC AIML: Mathematics & Statistics Essentials", issuer: "Simplilearn", date: "May 2026", orig: O + "simpli/AI-ML-DS_Mathematics & Statistics Essentials_2026.pdf" },
+  { slug: "productled-plg-fundamentals", kind: "cert", title: "Product-Led Fundamentals", issuer: "ProductLed", date: "Feb 2026", orig: O + "product_led_growth-fundamentals-quiz-report.pdf" },
+  { slug: "coursera-data-ecosystems-etl-spark", kind: "cert", title: "Engineering Data Ecosystems: Pipelines, ETL, Spark", issuer: "Coursera", date: "Sep 2025", orig: "https://coursera.org/verify/3KSHM8ZHIJC1", origLabel: "Verify" },
+  { slug: "skillup-cissp-security-assessment", kind: "cert", title: "Introduction to CISSP Security Assessment & Testing and Security Operations", issuer: "SkillUp by Simplilearn", date: "Dec 2022", orig: O + "simpli/security_CISSP Security Assessment_2022.pdf" },
+  { slug: "skillup-ethical-hacking", kind: "cert", title: "Ethical Hacking for Beginners", issuer: "SkillUp by Simplilearn", date: "Nov 2022", orig: O + "simpli/security_Ethical Hacking for Beginner_2022.pdf" },
+  { slug: "hackathon-5-team-atom", kind: "award", title: "Certificate of Excellence: Hackathon 5.0 winner (Team Atom)", issuer: "eZee Technosys", date: "Apr 2019" },
+  { slug: "hackathon-4-surgical-strike", kind: "award", title: "Certificate of Excellence: Hackathon 4.0 winner (The Surgical Strike)", issuer: "eZee Technosys", date: "Jan 2019" },
+];
+const BADGES = [
+  { slug: "get-certified-edition-3", title: "Get Certified Edition 3", date: "Jun 2026" },
+  { slug: "gemini-enterprise-agent-ready", title: "Gemini Enterprise Agent Ready", date: "Feb 2026" },
+  { slug: "innovators-get-certified", title: "Innovators Get Certified", date: "Apr 2025" },
+  { slug: "google-cloud-innovator", title: "Google Cloud Innovator", date: "Apr 2025" },
+  { slug: "learning", title: "Learning", date: "Aug 2024" },
+  { slug: "joined-google-developer-program", title: "Joined the Google Developer Program", date: "Jan 2021" },
 ];
 
 (() => {
@@ -581,27 +629,56 @@ const CERTIFICATES = [
   const open = document.getElementById('viewer-open');
   let cur = 0;
 
-  CERTIFICATES.forEach((c, i) => {
+  let shown = CERTIFICATES.map((_, i) => i);      // indexes the viewer steps through (current filter)
+  const cards = CERTIFICATES.map((c, i) => {
     const li = document.createElement('li');
     li.className = 'cert';
-    li.innerHTML = '<button type="button"><div class="thumb"><img loading="lazy" alt=""></div>' +
-      '<div class="meta"><h3></h3><div class="by"><span></span><time></time></div></div></button>';
-    li.querySelector('img').src = c.img;
-    li.querySelector('img').alt = 'Certificate: ' + c.title;
+    li.innerHTML = '<button type="button"><div class="thumb"><img loading="lazy" decoding="async" alt=""></div>' +
+      '<div class="meta"><span class="kind"></span><h3></h3><div class="by"><span></span><time></time></div></div></button>';
+    const im = li.querySelector('img');
+    im.src = W + c.slug + '-thumb.webp'; im.alt = (c.kind === 'award' ? 'Award: ' : 'Certificate: ') + c.title;
+    li.querySelector('.kind').textContent = c.kind === 'award' ? 'Award' : 'Certificate';
+    if (c.kind === 'award') li.querySelector('.kind').classList.add('award');
     li.querySelector('h3').textContent = c.title;
     li.querySelector('.by span').textContent = c.issuer;
     li.querySelector('time').textContent = c.date || '';
-    li.querySelector('button').addEventListener('click', () => show(i));
+    li.querySelector('button').addEventListener('click', () => show(shown.indexOf(i)));
     list.appendChild(li);
+    return li;
+  });
+  const blist = document.getElementById('badges');
+  BADGES.forEach(b => {
+    const li = document.createElement('li');
+    li.className = 'badge';
+    li.innerHTML = '<img loading="lazy" decoding="async" width="84" height="84" alt=""><b></b><time></time>';
+    li.querySelector('img').src = W + 'badge-' + b.slug + '.webp';
+    li.querySelector('img').alt = 'Badge: ' + b.title;
+    li.querySelector('b').textContent = b.title;
+    li.querySelector('time').textContent = b.date;
+    blist.appendChild(li);
+  });
+  const block = document.getElementById('badges-block');
+  const count = k => k === 'all' ? CERTIFICATES.length + BADGES.length : k === 'badge' ? BADGES.length : CERTIFICATES.filter(c => c.kind === k).length;
+  document.querySelectorAll('#cert-tabs button').forEach(btn => {
+    btn.insertAdjacentHTML('beforeend', ' <span>' + count(btn.dataset.k) + '</span>');
+    btn.addEventListener('click', () => {
+      const k = btn.dataset.k;
+      document.querySelectorAll('#cert-tabs button').forEach(x => x.setAttribute('aria-pressed', x === btn));
+      shown = [];
+      cards.forEach((li, i) => { const on = k === 'all' || CERTIFICATES[i].kind === k; li.hidden = !on; if (on) shown.push(i); });
+      list.hidden = shown.length === 0;
+      block.hidden = !(k === 'all' || k === 'badge');
+    });
   });
 
   function show(i) {
-    cur = (i + CERTIFICATES.length) % CERTIFICATES.length;
-    const c = CERTIFICATES[cur];
-    img.src = c.img; img.alt = 'Certificate: ' + c.title;
+    cur = (i + shown.length) % shown.length;
+    const c = CERTIFICATES[shown[cur]];
+    img.src = W + c.slug + '.webp'; img.alt = (c.kind === 'award' ? 'Award: ' : 'Certificate: ') + c.title;
     title.textContent = c.title;
-    by.textContent = c.issuer + (c.date ? ' · ' + c.date : '') + '  (' + (cur + 1) + ' of ' + CERTIFICATES.length + ')';
-    open.href = c.img;
+    by.textContent = c.issuer + (c.date ? ' · ' + c.date : '') + '  (' + (cur + 1) + ' of ' + shown.length + ')';
+    open.href = c.orig || (W + c.slug + '.webp');
+    open.textContent = c.origLabel || (c.orig ? 'Original' : 'Open');
     if (!dlg.open) dlg.showModal();
   }
   document.getElementById('viewer-prev').onclick = () => show(cur - 1);
