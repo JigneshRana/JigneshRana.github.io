@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>From Discovery to Delight: A Field Guide to Launching Features Customers Love</title>
+<meta name="description" content="An end-to-end playbook for go-to-market and product releases: discovery, structured customer interviews, understanding the customer's business, technical and security challenges, KPIs, delivery plan, beta, release, tracking and feedback loops.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+
+  :root{
+    --bg:#faf6ee; --paper:#fffdf8; --ink:#1d2433; --muted:#5b6474; --line:#e7dfcf;
+    --accent:#b35c00; --accent-soft:#f6e6d3; --teal:#1f6f6b; --teal-soft:#dcefeb;
+    --red:#a8322d; --red-soft:#f7e1df; --gold:#c99a2e;
+    --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,-apple-system,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+  .wide{max-width:1040px;margin:0 auto;padding:0 24px}
+
+  /* hero */
+  header.hero{padding:88px 0 56px;border-bottom:1px solid var(--line);background:
+    radial-gradient(circle at 85% 20%, var(--accent-soft) 0, transparent 40%),
+    radial-gradient(circle at 10% 90%, var(--teal-soft) 0, transparent 35%)}
+  .kicker{font:600 12px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  h1{font:700 clamp(36px,5.4vw,58px)/1.08 var(--serif);letter-spacing:-.02em;margin:18px 0 20px}
+  .dek{font-size:20px;color:var(--muted);max-width:640px;margin:0}
+  .meta{margin-top:28px;font-size:14px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+  .meta span::before{content:"•";margin-right:18px;color:var(--line)}
+  .meta span:first-child::before{content:none}
+
+  /* toc */
+  nav.toc{margin:40px 0 0;padding:20px 24px;background:var(--paper);border:1px solid var(--line);border-radius:14px}
+  nav.toc strong{font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  nav.toc ol{margin:10px 0 0;padding-left:20px;columns:2;column-gap:32px;font-size:15px}
+  nav.toc a{color:var(--ink);text-decoration:none}
+  nav.toc a:hover{color:var(--accent)}
+
+  main section{padding:56px 0 8px}
+  h2{font:700 clamp(28px,3.6vw,36px)/1.15 var(--serif);letter-spacing:-.015em;margin:0 0 18px}
+  h2 .num{color:var(--accent);font-size:.7em;vertical-align:.25em;margin-right:10px;font-family:var(--mono);font-weight:500}
+  h3{font:600 20px/1.3 var(--sans);margin:32px 0 10px}
+  p{margin:0 0 18px}
+  ul,ol{padding-left:22px;margin:0 0 18px}
+  li{margin:4px 0}
+  code{font:14px var(--mono);background:var(--accent-soft);padding:2px 6px;border-radius:5px}
+
+  .tldr{background:var(--ink);color:#f3efe6;border-radius:16px;padding:28px 32px;margin:48px 0 0}
+  .tldr h4{margin:0 0 10px;font:600 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .tldr ul{margin:0;padding-left:20px}
+  .tldr li{margin:8px 0}
+  .tldr b{color:#fff}
+
+  .callout{border-left:4px solid var(--accent);background:var(--paper);padding:18px 22px;border-radius:0 12px 12px 0;margin:24px 0}
+  .callout.teal{border-color:var(--teal)}
+  .callout.red{border-color:var(--red);background:var(--red-soft)}
+  .callout p:last-child{margin:0}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .stat .v{font:700 28px/1.1 var(--serif);color:var(--teal)}
+  .stat .l{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+  figure{margin:32px 0}
+  figure.diagram{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;width:min(1000px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+  figcaption{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
+  svg text{font-family:var(--sans)}
+
+  /* tables */
+  .tbl{overflow-x:auto;margin:24px 0;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+  table{border-collapse:collapse;width:100%;font-size:15px}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font:600 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:#f6f0e4}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-size:14px;white-space:nowrap}
+  tr.best td{background:var(--teal-soft)}
+  tr.total td{font-weight:600;background:#f6f0e4}
+
+  /* architecture cards */
+  .arch{display:grid;gap:22px;margin:28px 0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px 28px;position:relative}
+  .card .tag{display:inline-block;margin-bottom:12px;font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+  .card .tag.teal{background:var(--teal-soft);color:var(--teal)}
+  .card .tag.red{background:var(--red-soft);color:var(--red)}
+  .card h3{margin:0 0 4px;font:700 22px/1.25 var(--serif);}
+  .card .sub{color:var(--muted);font-size:15px;margin:0 0 16px}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 18px}
+  .flow span{font:500 13px var(--mono);background:var(--bg);border:1px solid var(--line);padding:5px 10px;border-radius:8px}
+  .flow i{font-style:normal;color:var(--accent)}
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:15px}
+  .pc h5{margin:0 0 6px;font:600 12px var(--sans);letter-spacing:.1em;text-transform:uppercase}
+  .pc .pro h5{color:var(--teal)} .pc .con h5{color:var(--red)}
+  .pc ul{margin:0;padding-left:18px}
+  .price{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .price b{font:700 26px var(--serif);color:var(--ink)}
+  .price small{color:var(--muted);font-size:13px}
+
+  /* bar chart */
+  .chart{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin:28px 0}
+  .chart h4{margin:0 0 4px;font:700 20px var(--serif)}
+  .chart .cap{margin:0 0 20px;color:var(--muted);font-size:14px}
+  .bar{display:grid;grid-template-columns:230px 1fr 64px;align-items:center;gap:14px;margin:10px 0;font-size:14px}
+  .bar .track{height:22px;background:var(--bg);border-radius:6px;overflow:hidden}
+  .bar .fill{height:100%;border-radius:6px;background:var(--accent);opacity:.85}
+  .bar.cheap .fill{background:var(--teal)}
+  .bar.dear .fill{background:var(--red)}
+  .bar .val{font:500 14px var(--mono);text-align:right}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0}
+  .tip{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .tip h4{margin:0 0 6px;font:600 16px var(--sans)}
+  .tip p{margin:0;font-size:15px;color:var(--muted)}
+
+  .decide{display:grid;gap:12px;margin:24px 0}
+  .decide div{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px;font-size:15px}
+  .decide b{font:600 13px var(--mono);color:var(--teal);white-space:nowrap}
+
+  footer{margin-top:72px;padding:40px 0 64px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+  @media (max-width:760px){
+    body{font-size:16px}
+    .stats{grid-template-columns:1fr 1fr}
+    nav.toc ol{columns:1}
+    .pc,.grid2{grid-template-columns:1fr}
+    .bar{grid-template-columns:1fr 56px}
+    .bar .lbl{grid-column:1 / -1;margin-bottom:-6px}
+  }
+
+  /* page-specific */
+  .guide{display:grid;gap:16px;margin:24px 0}
+  .phase{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 24px;display:grid;grid-template-columns:120px 1fr;gap:20px}
+  .phase .when{font:500 12px var(--mono);color:var(--accent);line-height:1.5}
+  .phase .when b{display:block;font:700 18px var(--serif);color:var(--ink);margin-bottom:4px}
+  .phase h4{margin:0 0 6px;font:600 17px var(--sans)}
+  .phase .goal{margin:0 0 12px;color:var(--muted);font-size:15px}
+  .say{background:var(--bg);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 8px 8px 0;font-size:15px;font-style:italic;margin:8px 0}
+  .probe{font-size:14px;color:var(--muted);margin:10px 0 0}
+  .probe b{color:var(--ink);font-style:normal}
+  .listen{display:inline-block;margin-top:10px;font:600 11px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--teal);background:var(--teal-soft);padding:4px 9px;border-radius:99px}
+  .listen + span{font-size:14px;color:var(--muted);margin-left:6px}
+
+  .vs{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin:20px 0;background:var(--paper)}
+  .vs div{padding:12px 16px;border-bottom:1px solid var(--line);font-size:15px}
+  .vs .h{font:600 12px var(--sans);letter-spacing:.1em;text-transform:uppercase;background:#f6f0e4}
+  .vs .bad{color:var(--red)} .vs .good{color:var(--teal)}
+  .vs div:nth-last-child(-n+2){border-bottom:0}
+  .vs div:nth-child(odd){border-right:1px solid var(--line)}
+
+  .matrix{display:grid;grid-template-columns:36px 1fr 1fr;grid-template-rows:1fr 1fr 30px;gap:10px;margin:24px 0;max-width:640px}
+  .matrix .cell{border-radius:14px;padding:16px;font-size:14px;min-height:120px}
+  .matrix .cell b{display:block;font:700 17px var(--serif);margin-bottom:4px}
+  .matrix .ax{font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;align-items:center;justify-content:center}
+  .matrix .ay{writing-mode:vertical-rl;transform:rotate(180deg);grid-row:1 / 3}
+  .matrix .ax.x{grid-column:2 / 4}
+
+  .chal{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0}
+  .chal .card h3{padding-right:0;font-size:20px}
+  .chal .card ul{font-size:15px;margin:8px 0 0}
+  .chal .card .fix{margin-top:12px;font-size:14px;background:var(--teal-soft);border-radius:10px;padding:10px 12px;color:#134a47}
+
+  .kpi-layers{display:grid;gap:10px;margin:24px 0}
+  .layer{display:grid;grid-template-columns:200px 1fr;gap:16px;align-items:center;border-radius:14px;padding:16px 20px}
+  .layer b{font:700 17px var(--serif)}
+  .layer span{font-size:15px}
+
+  .gantt{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:22px 24px;margin:24px 0;overflow-x:auto}
+  .gantt .row{display:grid;grid-template-columns:170px 1fr;align-items:center;gap:12px;margin:8px 0;min-width:620px}
+  .gantt .row .n{font-size:14px;font-weight:500}
+  .gantt .track{position:relative;height:26px;background:repeating-linear-gradient(90deg,transparent 0,transparent calc(100%/14 - 1px),var(--line) calc(100%/14 - 1px),var(--line) calc(100%/14));border-radius:6px}
+  .gantt .seg{position:absolute;top:3px;bottom:3px;border-radius:5px;font:500 11px var(--mono);color:#fff;display:flex;align-items:center;padding-left:8px;white-space:nowrap;overflow:hidden}
+  .gantt .weeks{display:grid;grid-template-columns:182px repeat(14,1fr);gap:0;font:500 11px var(--mono);color:var(--muted);min-width:620px;column-gap:0}
+  .ms{position:absolute;top:-4px;width:2px;bottom:-4px;background:var(--ink)}
+
+  .roll{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:24px 0}
+  .roll div{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:16px;text-align:center}
+  .roll b{display:block;font:700 26px var(--serif);color:var(--teal)}
+  .roll span{font-size:13px;color:var(--muted);line-height:1.4;display:block;margin-top:4px}
+
+  .check{columns:2;column-gap:28px;list-style:none;padding:0;font-size:15px}
+  .check li{break-inside:avoid;padding-left:26px;position:relative;margin:0 0 10px}
+  .check li::before{content:"✓";position:absolute;left:0;top:0;width:18px;height:18px;border-radius:5px;background:var(--teal-soft);color:var(--teal);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;margin-top:3px}
+  .check li b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+
+  .tmpl{font:14px/1.7 var(--mono);background:var(--ink);color:#f3efe6;border-radius:14px;padding:20px 22px;margin:20px 0;white-space:pre-wrap}
+  .tmpl em{color:var(--gold);font-style:normal}
+
+  @media (max-width:760px){
+    .phase{grid-template-columns:1fr;gap:8px}
+    .vs{grid-template-columns:1fr}
+    .vs div:nth-child(odd){border-right:0}
+    .chal{grid-template-columns:1fr}
+    .layer{grid-template-columns:1fr;gap:4px}
+    .roll{grid-template-columns:1fr 1fr}
+    .check{columns:1}
+  }
+
+  /* site bar (link back to the home page) */
+  .sitebar{position:sticky;top:0;z-index:20;background:rgba(250,246,238,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .sitebar .in{max-width:1040px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:15px}
+  .sitebar a{color:var(--ink);text-decoration:none;font-weight:600}
+  .sitebar a:hover{color:var(--accent)}
+  .sitebar .all{font-weight:500;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="sitebar"><div class="in"><a href="../">← Jignesh A. Rana</a><a class="all" href="../#writing">More writing</a></div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Product · Engineering Leadership · Go-to-Market</div>
+    <h1>From Discovery to Delight: A Field Guide to Launching Features Customers Love</h1>
+    <p class="dek">Most launches don't fail on launch day. They fail months earlier, in a discovery call that asked the wrong questions. This is the end-to-end playbook I use, from the first customer conversation to the tenth improvement after release.</p>
+    <div class="meta"><span>By Jignesh Rana</span><span>November 2026</span><span>18 min read</span></div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <div class="tldr">
+    <h4>TL;DR</h4>
+    <ul>
+      <li><b>Discovery is a discussion, not a questionnaire.</b> Run interviews like a structured consulting conversation: context, then workflow, then pain, then value.</li>
+      <li><b>Understand their business before their feature request.</b> If you can't explain how your feature moves the customer's own KPIs, you aren't ready to build it.</li>
+      <li><b>Agree on KPIs before the first sprint</b>, and treat analytics as part of "done", not an afterthought.</li>
+      <li><b>Name the technical, architecture and security risks early.</b> They are much cheaper to fix on a whiteboard than in production.</li>
+      <li><b>Release gradually</b> (beta, then canary, then everyone) with a kill switch. Track for 90 days, close the loop with customers, and iterate.</li>
+    </ul>
+  </div>
+
+  <nav class="toc">
+    <strong>In this article</strong>
+    <ol>
+      <li><a href="#why">Why launches fail</a></li>
+      <li><a href="#lifecycle">The lifecycle at a glance</a></li>
+      <li><a href="#discovery">Discovery: plan before you talk</a></li>
+      <li><a href="#interview">The interview as a structured discussion</a></li>
+      <li><a href="#business">Understand the customer's business</a></li>
+      <li><a href="#pain">Pain points &amp; synthesis</a></li>
+      <li><a href="#validate">Validate before you build</a></li>
+      <li><a href="#challenges">Technical, architecture &amp; security challenges</a></li>
+      <li><a href="#kpi">KPIs that matter</a></li>
+      <li><a href="#plan">The development plan</a></li>
+      <li><a href="#bottlenecks">Bottlenecks &amp; how to break them</a></li>
+      <li><a href="#beta">Beta testing</a></li>
+      <li><a href="#release">Release</a></li>
+      <li><a href="#track">Tracking</a></li>
+      <li><a href="#comms">Communication plan</a></li>
+      <li><a href="#feedback">Feedback &amp; continuous improvement</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 -->
+  <section id="why">
+    <h2><span class="num">01</span>Why launches fail</h2>
+    <p>In every unsuccessful release I've seen, the failure came down to one of four patterns. Each one starts at a different stage, and that's why this guide covers the whole journey rather than just "launch day".</p>
+    <div class="grid2">
+      <div class="tip"><h4>❌ Wrong problem</h4><p>The team solved something customers mentioned once but don't actually lose sleep over. <em>This is a discovery failure.</em></p></div>
+      <div class="tip"><h4>❌ Right problem, wrong solution</h4><p>The pain was real, but the solution didn't fit how customers actually work. <em>This is a validation failure.</em></p></div>
+      <div class="tip"><h4>❌ Good product, poor launch</h4><p>Nobody knew it existed, support wasn't trained, or the rollout broke something. <em>This is a GTM and release failure.</em></p></div>
+      <div class="tip"><h4>❌ Launched and abandoned</h4><p>V1 shipped, the team moved on, adoption stalled and nobody looked. <em>This is a tracking and feedback failure.</em></p></div>
+    </div>
+    <div class="callout"><p><strong>Running example.</strong> To keep things concrete, I'll use one scenario throughout: a B2B SaaS company releasing a <em>self-serve revenue analytics dashboard</em> to its hotel customers, so property managers can see occupancy, ADR, booking pace and channel mix without exporting spreadsheets.</p></div>
+  </section>
+
+  <!-- 2 -->
+  <section id="lifecycle">
+    <h2><span class="num">02</span>The lifecycle at a glance</h2>
+    <p>Eight stages, and it's a loop, not a line. What you learn after release feeds the next round of discovery.</p>
+    <figure class="diagram">
+      <svg viewBox="0 0 960 330" width="100%" role="img" aria-label="Product release lifecycle: discover, define, validate, build, beta, release, track, improve, looping back to discover">
+        <defs><marker id="a2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b35c00"/></marker></defs>
+        <g font-family="Inter,sans-serif">
+          <!-- top row -->
+          <g><rect x="30" y="40" width="190" height="96" rx="14" fill="#f6e6d3" stroke="#b35c00"/><text x="125" y="72" text-anchor="middle" font-size="12" fill="#b35c00" font-weight="600">01</text><text x="125" y="96" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Discover</text><text x="125" y="118" text-anchor="middle" font-size="12" fill="#5b6474">interviews · data · context</text></g>
+          <g><rect x="260" y="40" width="190" height="96" rx="14" fill="#f6e6d3" stroke="#b35c00"/><text x="355" y="72" text-anchor="middle" font-size="12" fill="#b35c00" font-weight="600">02</text><text x="355" y="96" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Define</text><text x="355" y="118" text-anchor="middle" font-size="12" fill="#5b6474">problem · KPIs · scope</text></g>
+          <g><rect x="490" y="40" width="190" height="96" rx="14" fill="#f6e6d3" stroke="#b35c00"/><text x="585" y="72" text-anchor="middle" font-size="12" fill="#b35c00" font-weight="600">03</text><text x="585" y="96" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Validate</text><text x="585" y="118" text-anchor="middle" font-size="12" fill="#5b6474">prototype · design partners</text></g>
+          <g><rect x="720" y="40" width="190" height="96" rx="14" fill="#e4e8ec" stroke="#4a5568"/><text x="815" y="72" text-anchor="middle" font-size="12" fill="#4a5568" font-weight="600">04</text><text x="815" y="96" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Build</text><text x="815" y="118" text-anchor="middle" font-size="12" fill="#5b6474">architecture · security · slices</text></g>
+          <!-- bottom row (right to left) -->
+          <g><rect x="720" y="200" width="190" height="96" rx="14" fill="#dcefeb" stroke="#1f6f6b"/><text x="815" y="232" text-anchor="middle" font-size="12" fill="#1f6f6b" font-weight="600">05</text><text x="815" y="256" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Beta</text><text x="815" y="278" text-anchor="middle" font-size="12" fill="#5b6474">design partners · exit criteria</text></g>
+          <g><rect x="490" y="200" width="190" height="96" rx="14" fill="#dcefeb" stroke="#1f6f6b"/><text x="585" y="232" text-anchor="middle" font-size="12" fill="#1f6f6b" font-weight="600">06</text><text x="585" y="256" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Release</text><text x="585" y="278" text-anchor="middle" font-size="12" fill="#5b6474">flags · canary · comms</text></g>
+          <g><rect x="260" y="200" width="190" height="96" rx="14" fill="#f3e3b5" stroke="#c99a2e"/><text x="355" y="232" text-anchor="middle" font-size="12" fill="#8a6a10" font-weight="600">07</text><text x="355" y="256" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Track</text><text x="355" y="278" text-anchor="middle" font-size="12" fill="#5b6474">adoption · health · value</text></g>
+          <g><rect x="30" y="200" width="190" height="96" rx="14" fill="#f3e3b5" stroke="#c99a2e"/><text x="125" y="232" text-anchor="middle" font-size="12" fill="#8a6a10" font-weight="600">08</text><text x="125" y="256" text-anchor="middle" font-size="17" font-weight="700" fill="#1d2433">Improve</text><text x="125" y="278" text-anchor="middle" font-size="12" fill="#5b6474">feedback · iterate · retro</text></g>
+          <!-- arrows -->
+          <path d="M222 88 H256" stroke="#b35c00" stroke-width="2" marker-end="url(#a2)"/>
+          <path d="M452 88 H486" stroke="#b35c00" stroke-width="2" marker-end="url(#a2)"/>
+          <path d="M682 88 H716" stroke="#b35c00" stroke-width="2" marker-end="url(#a2)"/>
+          <path d="M815 138 V196" stroke="#b35c00" stroke-width="2" marker-end="url(#a2)"/>
+          <path d="M718 248 H684" stroke="#b35c00" stroke-width="2" marker-end="url(#a2)"/>
+          <path d="M488 248 H454" stroke="#b35c00" stroke-width="2" marker-end="url(#a2)"/>
+          <path d="M258 248 H224" stroke="#b35c00" stroke-width="2" marker-end="url(#a2)"/>
+          <path d="M125 198 V140" stroke="#b35c00" stroke-width="2" stroke-dasharray="5 4" marker-end="url(#a2)"/>
+          <text x="140" y="174" font-size="12" fill="#b35c00" font-style="italic">learning loop</text>
+          <text x="480" y="172" text-anchor="middle" font-size="12" fill="#5b6474">Communication &amp; stakeholder alignment run through every stage</text>
+        </g>
+      </svg>
+      <figcaption>Stages 1–3 decide <em>whether</em> to build. Stages 4–6 decide <em>how well</em>. Stages 7–8 decide whether customers keep loving it.</figcaption>
+    </figure>
+  </section>
+
+  <!-- 3 -->
+  <section id="discovery">
+    <h2><span class="num">03</span>Discovery: plan before you talk</h2>
+    <p>Discovery starts before anyone gets on a call. Walking in unprepared wastes the customer's time and gets you shallow answers.</p>
+
+    <h3>1. Write down your hypothesis, so you can disprove it</h3>
+    <div class="tmpl">We believe <em>[customer segment]</em> struggles with <em>[problem]</em>
+because <em>[root cause]</em>, which costs them <em>[time / money / risk]</em>.
+We'll know we're right if <em>[observable evidence]</em>.</div>
+    <p><em>Example:</em> we believe independent and mid-size hotel managers struggle to understand booking performance, because data is spread across several systems and needs manual exports, which costs them hours every week and leads to late pricing decisions. We'll know we're right if most interviewees describe a recurring spreadsheet ritual.</p>
+
+    <h3>2. Choose who to talk to: roles, not just accounts</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Role</th><th>Why they matter</th><th>Example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Daily user</strong></td><td>Lives with the pain; knows the real workflow</td><td>Front-office or revenue executive</td></tr>
+        <tr><td><strong>Economic buyer</strong></td><td>Owns the budget and the business outcome</td><td>General manager, owner, group head</td></tr>
+        <tr><td><strong>Champion</strong></td><td>Will push adoption internally</td><td>Tech-savvy revenue manager</td></tr>
+        <tr><td><strong>Gatekeeper / blocker</strong></td><td>Can veto on security, IT or compliance grounds</td><td>Group IT, finance controller</td></tr>
+        <tr><td><strong>Internal voices</strong></td><td>See patterns across hundreds of accounts</td><td>Support, customer success, sales, implementation</td></tr>
+      </tbody>
+    </table></div>
+    <p>Aim for <strong>5–8 conversations per segment</strong> (small vs. large customers, different regions or business models), and stop when you stop hearing new things. Include at least one customer who churned or never adopted. They're the most honest.</p>
+
+    <h3>3. Do your homework on every account</h3>
+    <ul>
+      <li>Product usage data: what they use, what they ignore, and where they drop off.</li>
+      <li>Support tickets and feature requests from the last 6–12 months.</li>
+      <li>Contract size, renewal date, account history and known relationship issues (ask the account manager).</li>
+      <li>Their public footprint: property size, location, positioning, recent changes.</li>
+    </ul>
+  </section>
+
+  <!-- 4 -->
+  <section id="interview">
+    <h2><span class="num">04</span>The interview as a structured discussion</h2>
+    <p>A good discovery interview feels like a conversation between two professionals working on a business problem, not a survey read aloud. You come with a <strong>discussion guide</strong>: a sequence of themes, each with an opening statement that frames the topic, probes to go deeper, and a clear idea of what you're listening for.</p>
+
+    <h3>Before the call: set the frame</h3>
+    <p>Send a short invitation that makes three things clear: <strong>why</strong> you want to talk (to understand their operations, not to sell), <strong>how long</strong> it will take (45–60 minutes), and <strong>what's in it for them</strong> (early influence on the roadmap, a summary of what you learn across the industry). Ask permission to record, and bring a note-taker so the interviewer can focus on listening.</p>
+
+    <h3>The discussion guide (60 minutes)</h3>
+    <div class="guide">
+
+      <div class="phase">
+        <div class="when"><b>Open</b>0–5 min</div>
+        <div>
+          <h4>Set context and build trust</h4>
+          <p class="goal">Lower defences and position this as a working session.</p>
+          <div class="say">"Thanks for making the time. The purpose today is to understand how your team runs revenue and reporting day to day. There are no right answers, and we're not here to demo anything. Candid input, including criticism of us, is the most useful thing you can give."</div>
+          <span class="listen">Listen for</span><span>tone, openness, any frustration they bring in</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="when"><b>Their world</b>5–15 min</div>
+        <div>
+          <h4>Role, team and business context</h4>
+          <p class="goal">Understand the person and the organisation before the problem.</p>
+          <div class="say">"Let's start with your role. I'd like to understand what a successful month looks like for you, and how your performance is judged by leadership or ownership."</div>
+          <p class="probe"><b>Probes:</b> Who do you report to, and what do they ask you for? Which numbers come up in your monthly review? How has the business changed in the last year?</p>
+          <span class="listen">Listen for</span><span>the KPIs they're measured on, decision-makers, business priorities</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="when"><b>Workflow</b>15–30 min</div>
+        <div>
+          <h4>Walk through a real, recent example</h4>
+          <p class="goal">Get past behaviour, not opinions. Specific stories reveal the truth.</p>
+          <div class="say">"Think about the last time you prepared a performance or pricing review, say last week. I'd like you to walk me through it step by step, from where the data came from to who saw the final result."</div>
+          <p class="probe"><b>Probes:</b> What did you open first? What happened next? How long did that take? Who else was involved? What did you do when the numbers didn't match?</p>
+          <span class="listen">Listen for</span><span>tools, handoffs, workarounds, spreadsheets, wait time</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="when"><b>Pain</b>30–45 min</div>
+        <div>
+          <h4>Go deep on what hurts, and how much</h4>
+          <p class="goal">Find the root cause and put a number on the cost.</p>
+          <div class="say">"You mentioned reconciling numbers across two systems takes most of a morning. Let's stay on that for a moment. I'd like to understand why it happens and what it costs you when it goes wrong."</div>
+          <p class="probe"><b>Probes:</b> Why does that happen? (repeat up to five times) · How often? · What's the impact when you're late or wrong? · What have you tried to fix it? · If this vanished tomorrow, what would you do with that time?</p>
+          <span class="listen">Listen for</span><span>frequency, severity, money or time lost, emotional language, existing workarounds</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="when"><b>Value</b>45–55 min</div>
+        <div>
+          <h4>Priorities and the shape of "better"</h4>
+          <p class="goal">Learn what success means to them, without pitching your solution.</p>
+          <div class="say">"Looking at everything we've discussed, if you could change only one thing in the next six months, I'd like to understand which one you'd choose and why it matters more than the others."</div>
+          <p class="probe"><b>Probes:</b> How would you know it's solved? Who else would need to agree to adopt a new tool? What would make you hesitate (cost, security, training)?</p>
+          <span class="listen">Listen for</span><span>priority ranking, success criteria, buying process, adoption blockers</span>
+        </div>
+      </div>
+
+      <div class="phase">
+        <div class="when"><b>Close</b>55–60 min</div>
+        <div>
+          <h4>Summarise, check, and commit</h4>
+          <p class="goal">Confirm your understanding and earn the next step.</p>
+          <div class="say">"Let me play back what I heard: the three biggest issues are X, Y and Z, and Y matters most because of the weekly pricing meeting. Is that a fair summary? Would you be open to reviewing an early prototype in a few weeks?"</div>
+          <span class="listen">Listen for</span><span>corrections (gold!), willingness to become a design partner</span>
+        </div>
+      </div>
+    </div>
+
+    <h3>Techniques that separate good interviews from great ones</h3>
+    <ul>
+      <li><strong>Past over future.</strong> "Tell me about the last time…" beats "Would you use…?" every time. People are poor predictors of their own future behaviour.</li>
+      <li><strong>Stay silent.</strong> Count to five after an answer. The most important detail often comes after the pause.</li>
+      <li><strong>Mirror and label.</strong> Repeat their last few words, or name the emotion ("It sounds like that's frustrating…"), to invite more.</li>
+      <li><strong>Quantify everything.</strong> "A lot of time" becomes "how many hours, how many people, how often?"</li>
+      <li><strong>Ask for artefacts.</strong> "Could you share the spreadsheet you use?" A real workaround is the strongest evidence of pain.</li>
+    </ul>
+
+    <div class="vs">
+      <div class="h bad">Avoid</div><div class="h good">Do instead</div>
+      <div>"Would you use a dashboard that shows booking pace?"</div><div>"Walk me through how you checked booking pace last week."</div>
+      <div>"Don't you think real-time data would help?" (leading)</div><div>"How current does the data need to be for the decisions you make?"</div>
+      <div>"What features do you want?"</div><div>"What's the hardest part of your week, and why?"</div>
+      <div>Pitching your solution halfway through</div><div>Staying in learning mode, and demoing only in a later session</div>
+      <div>One interviewer taking notes and talking</div><div>An interviewer plus a dedicated note-taker, then a debrief within 24 hours</div>
+    </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="business">
+    <h2><span class="num">05</span>Understand the customer's business, not just the user</h2>
+    <p>Features get adopted when they help the customer win at <em>their</em> game. Before defining a solution, you should be able to fill in this one-page picture for each segment:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Dimension</th><th>Question to answer</th><th>Example (hotel segment)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Revenue model</strong></td><td>How do they make money, and what drives margin?</td><td>Room revenue by channel; commission costs differ a lot between direct and OTA bookings</td></tr>
+        <tr><td><strong>Success metrics</strong></td><td>Which numbers are they judged on?</td><td>Occupancy, ADR, RevPAR, direct-booking share, GOP</td></tr>
+        <tr><td><strong>Rhythm</strong></td><td>Daily, weekly and seasonal cycles</td><td>Daily pickup check, weekly pricing meeting, peak seasons and events</td></tr>
+        <tr><td><strong>Decision process</strong></td><td>Who decides, who influences, who pays?</td><td>The GM decides, the revenue manager influences, the owner or group signs off on budget</td></tr>
+        <tr><td><strong>Current tools</strong></td><td>What already exists in their stack?</td><td>PMS, channel manager, spreadsheets, maybe a separate BI tool</td></tr>
+        <tr><td><strong>Constraints</strong></td><td>Budget, skills, compliance, staffing</td><td>Small teams, high staff turnover, data privacy obligations for guest data</td></tr>
+        <tr><td><strong>Competitive pressure</strong></td><td>What threatens them?</td><td>Rate parity, OTA dependence, new competitors nearby</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout teal"><p><strong>The test:</strong> can you finish this sentence for your feature? <em>"This helps [customer] improve [their KPI] by [mechanism], worth roughly [value] per [period]."</em> For example: "This helps a 60-room property raise direct-booking share by spotting channel shifts a week earlier, worth a measurable cut in commission costs each month." If you can't, go back to discovery.</p></div>
+  </section>
+
+  <!-- 6 -->
+  <section id="pain">
+    <h2><span class="num">06</span>Pain points: prioritise, then synthesise</h2>
+    <p>Not all pain is equal. Plot every pain point you heard on two axes: <strong>how often</strong> it happens and <strong>how much</strong> it hurts when it does.</p>
+    <div class="matrix">
+      <div class="ax ay">Severity →</div>
+      <div class="cell" style="background:var(--accent-soft)"><b>Episodic crisis</b>Rare but costly (e.g. year-end audit). Solve with a targeted tool or a service.</div>
+      <div class="cell" style="background:var(--teal-soft)"><b>🎯 Build here</b>Frequent and painful (e.g. the weekly 4-hour reconciliation). Customers will pay and adopt.</div>
+      <div class="cell" style="background:#efe9dd"><b>Ignore (for now)</b>Rare and minor. Park it in the backlog.</div>
+      <div class="cell" style="background:#f3e3b5"><b>Paper cut</b>Frequent but minor. Quick UX wins that improve satisfaction.</div>
+      <div></div><div class="ax x">Frequency →</div>
+    </div>
+
+    <h3>From notes to insight</h3>
+    <ol>
+      <li><strong>Debrief within 24 hours.</strong> Capture quotes, observations and surprises while they're fresh.</li>
+      <li><strong>Tag and cluster.</strong> Put every observation on a virtual sticky note and group them by theme (affinity mapping).</li>
+      <li><strong>Count evidence.</strong> How many customers, from how many segments, described each theme without being prompted?</li>
+      <li><strong>Write the problem statement</strong> and the job to be done:</li>
+    </ol>
+    <div class="tmpl"><em>Job to be done:</em>
+When <em>[situation]</em>, I want to <em>[motivation]</em>, so I can <em>[expected outcome]</em>.
+
+When I prepare for the weekly pricing meeting, I want to see pace
+and channel mix in one place, so I can adjust rates before
+competitors do, without spending a morning in spreadsheets.</div>
+  </section>
+
+  <!-- 7 -->
+  <section id="validate">
+    <h2><span class="num">07</span>Validate the solution before you build it</h2>
+    <p>Engineering is the most expensive way to test an idea. Climb this ladder and only take the next step when the evidence justifies it:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Technique</th><th>Cost</th><th>What it proves</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Clickable prototype</strong> (Figma) in a follow-up session</td><td>Days</td><td>Does the workflow make sense? Is the information right?</td></tr>
+        <tr><td><strong>Concierge MVP</strong>: produce the report by hand for 3–5 customers</td><td>1–2 weeks</td><td>Do they actually use it every week? What do they ask for next?</td></tr>
+        <tr><td><strong>Fake-door test</strong>: an in-app entry point that measures clicks</td><td>Days</td><td>Is there demand across the wider customer base?</td></tr>
+        <tr><td><strong>Design-partner commitment</strong></td><td>Weeks</td><td>Will they invest time (weekly sessions) or money (a pre-commitment)? That's the strongest signal.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout"><p><strong>Rule of thumb:</strong> compliments are not evidence. Commitment is: time, data access, an introduction to their boss, or a signed pilot.</p></div>
+  </section>
+
+  <!-- 8 -->
+  <section id="challenges">
+    <h2><span class="num">08</span>Technical, engineering, architecture &amp; security challenges</h2>
+    <p>Run a <strong>risk-storming session</strong> with engineering, security and operations as soon as the problem is clear and before the scope is locked. List the risks under four headings, rate them by likelihood and impact, and assign each one an owner and a spike or mitigation.</p>
+    <div class="chal">
+      <article class="card">
+        <span class="tag">Technical</span>
+        <h3>Can it be built well?</h3>
+        <ul>
+          <li>Data quality and consistency across source systems</li>
+          <li>Latency expectations (real-time vs. hourly vs. daily)</li>
+          <li>Third-party API limits, reliability and contract changes</li>
+          <li>Performance at the largest customer's data volume</li>
+          <li>Backward compatibility with existing integrations</li>
+        </ul>
+        <div class="fix"><b>Mitigate:</b> time-boxed technical spikes, tests at production-scale volumes, and contract tests against external APIs.</div>
+      </article>
+      <article class="card">
+        <span class="tag">Engineering</span>
+        <h3>Can the team deliver it?</h3>
+        <ul>
+          <li>Skill gaps (e.g. data engineering, front-end visualisation)</li>
+          <li>Dependencies on other teams' roadmaps</li>
+          <li>Competing priorities and production support load</li>
+          <li>Test environments without realistic data</li>
+          <li>Knowledge concentrated in one or two people</li>
+        </ul>
+        <div class="fix"><b>Mitigate:</b> map dependencies on day one, pair programming, protect focus time, and use synthetic but realistic test data.</div>
+      </article>
+      <article class="card">
+        <span class="tag">Architecture</span>
+        <h3>Will it scale and evolve?</h3>
+        <ul>
+          <li>Multi-tenancy: shared vs. isolated data and compute</li>
+          <li>Build vs. buy vs. embed (e.g. an embedded BI engine)</li>
+          <li>Coupling to legacy monoliths; where the new service boundary sits</li>
+          <li>Cost per tenant as usage grows</li>
+          <li>Observability: logs, metrics, traces from day one</li>
+        </ul>
+        <div class="fix"><b>Mitigate:</b> write architecture decision records (ADRs), model the unit cost per customer, and design for a 10× load without building for 100×.</div>
+      </article>
+      <article class="card">
+        <span class="tag red">Security</span>
+        <h3>Is it safe and compliant?</h3>
+        <ul>
+          <li>Tenant isolation: customer A must never see customer B's data</li>
+          <li>Personal data (guest names, contacts): minimisation and masking</li>
+          <li>Authentication, role-based access, audit trails</li>
+          <li>Regulatory obligations (e.g. GDPR, India's DPDP Act, PCI DSS if payments are involved)</li>
+          <li>Secrets management, dependency vulnerabilities, export abuse</li>
+        </ul>
+        <div class="fix"><b>Mitigate:</b> threat-model with STRIDE during design, classify data, run automated security scans in CI, and pen-test before GA. Bring security in at design, not at the end.</div>
+      </article>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section id="kpi">
+    <h2><span class="num">09</span>KPIs that matter: define them before sprint one</h2>
+    <p>If you can't measure success, you can't claim it and you can't improve it. Agree on a layered set of metrics with product, engineering, sales and leadership, and put the instrumentation into the first sprint's definition of done.</p>
+    <div class="kpi-layers">
+      <div class="layer" style="background:var(--ink);color:#f3efe6"><b style="color:var(--gold)">North Star</b><span>The single number that captures delivered value. <em>Example: weekly active properties using the dashboard for a pricing decision.</em></span></div>
+      <div class="layer" style="background:var(--teal-soft)"><b>Adoption &amp; engagement</b><span>Activation rate, time-to-first-value, weekly/monthly active ratio, feature retention at 30/60/90 days</span></div>
+      <div class="layer" style="background:var(--accent-soft)"><b>Customer value</b><span>Hours saved per week, change in the customer's own KPI (e.g. direct-booking share), CSAT for the feature</span></div>
+      <div class="layer" style="background:#f3e3b5"><b>Business impact</b><span>Upsell or attach rate, change in churn among adopters, sales win rate where the feature is mentioned, support ticket deflection</span></div>
+      <div class="layer" style="background:var(--red-soft)"><b>Guardrails</b><span>Error rate, p95 latency, availability, security incidents, support ticket volume, cost per tenant. Things that must <em>not</em> get worse.</span></div>
+    </div>
+
+    <div class="tbl"><table>
+      <thead><tr><th>KPI</th><th>Definition</th><th>Illustrative target</th><th>Type</th></tr></thead>
+      <tbody>
+        <tr><td>Activation rate</td><td>% of enabled accounts that view a full report within 7 days</td><td>≥ 60%</td><td>Leading</td></tr>
+        <tr><td>Time to first value</td><td>Median time from enablement to first meaningful view</td><td>&lt; 10 minutes</td><td>Leading</td></tr>
+        <tr><td>Weekly active properties</td><td>Accounts with ≥ 2 sessions in a week</td><td>40% of enabled by day 90</td><td>North Star</td></tr>
+        <tr><td>Feature retention</td><td>% of activated accounts still active at day 60</td><td>≥ 70%</td><td>Lagging</td></tr>
+        <tr><td>Time saved</td><td>Self-reported or measured reduction in manual reporting</td><td>≥ 3 hours/week</td><td>Value</td></tr>
+        <tr><td>Feature CSAT</td><td>In-app rating after the third use</td><td>≥ 4.3 / 5</td><td>Value</td></tr>
+        <tr><td>p95 load time</td><td>Dashboard render time for the largest tenants</td><td>&lt; 3 seconds</td><td>Guardrail</td></tr>
+        <tr><td>Related support tickets</td><td>Tickets tagged to the feature per 100 active accounts</td><td>Falling month over month</td><td>Guardrail</td></tr>
+      </tbody>
+    </table></div>
+    <p style="font-size:14px;color:var(--muted)">Targets are illustrative. Set yours from baseline data gathered during discovery and beta.</p>
+  </section>
+
+  <!-- 10 -->
+  <section id="plan">
+    <h2><span class="num">10</span>The development plan</h2>
+    <p>A plan is a set of bets with checkpoints. Each phase has an <strong>exit criterion</strong>: evidence you need before moving on. Here's an illustrative 14-week plan for a feature of this size:</p>
+    <div class="gantt">
+      <div class="weeks"><span></span><span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span><span>W6</span><span>W7</span><span>W8</span><span>W9</span><span>W10</span><span>W11</span><span>W12</span><span>W13</span><span>W14</span></div>
+      <div class="row"><span class="n">Discovery</span><div class="track"><div class="seg" style="left:0;width:21.4%;background:var(--accent)">interviews</div></div></div>
+      <div class="row"><span class="n">Define &amp; KPIs</span><div class="track"><div class="seg" style="left:14.3%;width:14.3%;background:#c9772a">PRD</div></div></div>
+      <div class="row"><span class="n">Validate</span><div class="track"><div class="seg" style="left:21.4%;width:21.4%;background:#8a5a1c">prototypes</div></div></div>
+      <div class="row"><span class="n">Architecture &amp; security</span><div class="track"><div class="seg" style="left:21.4%;width:14.3%;background:#4a5568">ADRs</div></div></div>
+      <div class="row"><span class="n">Build (slices)</span><div class="track"><div class="seg" style="left:35.7%;width:42.9%;background:#1d2433">sprint 1 → sprint 3</div></div></div>
+      <div class="row"><span class="n">Beta</span><div class="track"><div class="seg" style="left:64.3%;width:28.6%;background:var(--teal)">private → public</div></div></div>
+      <div class="row"><span class="n">GTM enablement</span><div class="track"><div class="seg" style="left:71.4%;width:21.4%;background:#2f8f88">training</div></div></div>
+      <div class="row"><span class="n">Release &amp; track</span><div class="track"><div class="seg" style="left:85.7%;width:14.3%;background:var(--gold)">GA →</div></div></div>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Phase</th><th>Key outputs</th><th>Exit criterion</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Discovery</strong></td><td>Interview synthesis, evidence log, segment profiles</td><td>A top problem confirmed by most interviewees across at least 2 segments</td></tr>
+        <tr><td><strong>Define</strong></td><td>Problem statement, PRD, KPI tree, scope (and non-goals)</td><td>Sign-off from product, engineering and GTM leads</td></tr>
+        <tr><td><strong>Validate</strong></td><td>Prototype feedback, design partners recruited</td><td>3–5 design partners committed to beta</td></tr>
+        <tr><td><strong>Architecture &amp; security</strong></td><td>ADRs, threat model, data classification, cost model</td><td>Security review passed at design stage; spikes de-risked</td></tr>
+        <tr><td><strong>Build</strong></td><td>Thin vertical slices behind feature flags, with instrumentation</td><td>MVP complete against the definition of done</td></tr>
+        <tr><td><strong>Beta</strong></td><td>Usage data, feedback log, fixes</td><td>Beta exit criteria met (see section 12)</td></tr>
+        <tr><td><strong>Release</strong></td><td>Staged rollout, launch communications</td><td>100% rollout with guardrails green</td></tr>
+      </tbody>
+    </table></div>
+    <h3>A definition of done that protects the launch</h3>
+    <p>A story isn't done until it is coded and reviewed, has automated tests, emits its analytics events, passes the security checklist, has updated help documentation, and sits behind a feature flag. That's what makes the later stages calm instead of chaotic.</p>
+  </section>
+
+  <!-- 11 -->
+  <section id="bottlenecks">
+    <h2><span class="num">11</span>Bottlenecks and how to break them</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Bottleneck</th><th>Symptom</th><th>Fix</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Unclear requirements</strong></td><td>Rework, debates in pull requests</td><td>Problem-first PRD, example-driven acceptance criteria, an empowered product owner</td></tr>
+        <tr><td><strong>Decision latency</strong></td><td>Work waits days for an answer</td><td>A clear decision-maker per area (DACI), a decision log, and a 48-hour rule</td></tr>
+        <tr><td><strong>Cross-team dependencies</strong></td><td>"Blocked by team X" at every stand-up</td><td>Map dependencies at kickoff, agree on contracts and API mocks early, hold a weekly dependency sync</td></tr>
+        <tr><td><strong>Late security or compliance review</strong></td><td>Launch delayed by findings</td><td>Threat-model in design, automated scans in CI, a security champion in the team</td></tr>
+        <tr><td><strong>QA crunch at the end</strong></td><td>Bug spike before release</td><td>Test automation per slice, shift-left testing, a stable staging environment with realistic data</td></tr>
+        <tr><td><strong>Scope creep</strong></td><td>Dates slip, MVP keeps growing</td><td>Written non-goals, a "next version" parking lot, trade scope instead of dates</td></tr>
+        <tr><td><strong>Single points of knowledge</strong></td><td>One person is on every critical path</td><td>Pairing, documentation, rotating ownership</td></tr>
+        <tr><td><strong>Environment and data access</strong></td><td>Waiting for credentials or datasets</td><td>Self-service environments, synthetic data generators, access requests filed in week one</td></tr>
+        <tr><td><strong>Review queues</strong></td><td>Pull requests waiting more than a day</td><td>Small PRs, review SLAs, WIP limits</td></tr>
+      </tbody>
+    </table></div>
+    <p>Measure flow, not just velocity: <strong>cycle time</strong>, <strong>PR wait time</strong> and <strong>blocked days</strong> tell you where the system is stuck. DORA metrics (deployment frequency, lead time, change failure rate, time to restore) are a good baseline.</p>
+  </section>
+
+  <!-- 12 -->
+  <section id="beta">
+    <h2><span class="num">12</span>Beta testing: learn safely with real customers</h2>
+    <div class="grid2">
+      <div class="tip"><h4>Private beta (3–10 accounts)</h4><p>Design partners from discovery. High-touch: a weekly call, a shared feedback channel, direct access to the team. The goal is to prove value and fix the rough edges.</p></div>
+      <div class="tip"><h4>Public / open beta (10–20% of target)</h4><p>Opt-in or randomly selected accounts across segments. Low-touch: in-app feedback and analytics. The goal is to prove scale, self-serve onboarding and supportability.</p></div>
+    </div>
+    <h3>Make beta rigorous</h3>
+    <ul>
+      <li><strong>Entry criteria:</strong> core flows work end to end, the security review is passed, monitoring and alerts are live, and a rollback is tested.</li>
+      <li><strong>Beta agreement:</strong> set expectations on stability, data use, feedback cadence and how long the beta lasts.</li>
+      <li><strong>Feedback channels:</strong> an in-app widget, a short survey after the third use, scheduled interviews, and usage telemetry.</li>
+      <li><strong>Triage every week:</strong> sort feedback into bugs, usability issues, missing capabilities and out-of-scope requests. Reply to every participant.</li>
+    </ul>
+    <h3>Exit criteria (all must be true)</h3>
+    <ul class="check">
+      <li><b>Value</b>Activation and weekly-use targets met by most beta accounts</li>
+      <li><b>Quality</b>No open critical or high bugs; error rate within the guardrail</li>
+      <li><b>Performance</b>p95 latency meets target for the largest tenant</li>
+      <li><b>Satisfaction</b>Feature CSAT at or above target; design partners would recommend it</li>
+      <li><b>Supportability</b>Help docs are complete and support handled beta tickets without engineering</li>
+      <li><b>Security</b>Pen test findings remediated; data access audited</li>
+    </ul>
+  </section>
+
+  <!-- 13 -->
+  <section id="release">
+    <h2><span class="num">13</span>Release: gradual, observable, reversible</h2>
+    <p>Separate <em>deploying</em> code from <em>releasing</em> a feature. Deploy dark behind a flag, then widen exposure step by step while watching your guardrails.</p>
+    <div class="roll">
+      <div><b>0%</b><span>Dark launch: deployed, flag off, internal testing in production</span></div>
+      <div><b>1–5%</b><span>Canary: low-risk accounts, watch errors and latency</span></div>
+      <div><b>25%</b><span>Expand across segments and regions</span></div>
+      <div><b>50%</b><span>Confirm stable costs and support volume</span></div>
+      <div><b>100%</b><span>General availability, with the kill switch kept for 30 days</span></div>
+    </div>
+    <h3>Launch readiness checklist</h3>
+    <ul class="check">
+      <li><b>Engineering</b>Feature flags, a rollback plan and runbooks tested</li>
+      <li><b>Engineering</b>Dashboards and alerts for guardrail metrics</li>
+      <li><b>Engineering</b>Load tested at peak plus headroom; on-call briefed</li>
+      <li><b>Security</b>Final review, data processing records updated</li>
+      <li><b>Product</b>Analytics events verified in production</li>
+      <li><b>Product</b>Release notes, in-app announcement and onboarding tour</li>
+      <li><b>Support</b>Team trained; FAQ, macros and escalation path ready</li>
+      <li><b>Sales &amp; CS</b>Pitch, demo script, objection handling, pricing and packaging</li>
+      <li><b>Marketing</b>Launch page, blog, email, social, customer stories from beta</li>
+      <li><b>Legal</b>Terms, privacy notice and contract implications checked</li>
+    </ul>
+    <div class="callout red"><p><strong>Go / no-go meeting.</strong> 48 hours before each rollout step, review the checklist with one owner per area. Any red item means no-go. Shipping a day late is cheap. Losing customer trust is not.</p></div>
+  </section>
+
+  <!-- 14 -->
+  <section id="track">
+    <h2><span class="num">14</span>Tracking: the launch is the starting line</h2>
+    <div class="tbl"><table>
+      <thead><tr><th>Window</th><th>Focus</th><th>Who looks</th></tr></thead>
+      <tbody>
+        <tr><td><strong>First 72 hours</strong></td><td>Guardrails: errors, latency, incidents, support spikes. A daily war-room check.</td><td>Engineering lead, on-call, support lead</td></tr>
+        <tr><td><strong>Week 1–2</strong></td><td>Activation funnel: where do users drop out? Fix onboarding friction quickly.</td><td>Product manager, designer</td></tr>
+        <tr><td><strong>Day 30</strong></td><td>Engagement and early retention by segment; first CSAT read</td><td>Product and engineering leadership</td></tr>
+        <tr><td><strong>Day 60–90</strong></td><td>Retention cohorts, customer value, business impact vs. targets</td><td>Leadership, GTM, finance</td></tr>
+      </tbody>
+    </table></div>
+    <p>Build one shared launch dashboard that everyone can see, with KPIs grouped by layer (North Star, adoption, value, business, guardrails). Cut every metric by segment, because averages hide the customers who are struggling.</p>
+  </section>
+
+  <!-- 15 -->
+  <section id="comms">
+    <h2><span class="num">15</span>Communication plan</h2>
+    <p>Communication fails more launches than code does. Plan it like a deliverable: audience, message, channel and timing.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Audience</th><th>What they need to hear</th><th>Channel</th><th>When</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Leadership</strong></td><td>Why this matters, KPIs, risks, decisions needed</td><td>Monthly review, one-page status</td><td>Throughout</td></tr>
+        <tr><td><strong>Engineering &amp; product</strong></td><td>Scope, progress, blockers, customer insights</td><td>Stand-ups, sprint reviews, demos</td><td>Weekly</td></tr>
+        <tr><td><strong>Sales &amp; customer success</strong></td><td>Who it's for, value story, demo, pricing, FAQs</td><td>Enablement session, battle card</td><td>2–3 weeks before GA</td></tr>
+        <tr><td><strong>Support</strong></td><td>How it works, known issues, escalation</td><td>Training, knowledge base</td><td>Before beta, refreshed before GA</td></tr>
+        <tr><td><strong>Design partners</strong></td><td>Progress, what changed because of their input</td><td>Personal calls, a shared channel</td><td>Every 1–2 weeks</td></tr>
+        <tr><td><strong>All customers</strong></td><td>What's new, why it helps them, how to start</td><td>In-app message, email, webinar, release notes</td><td>At each rollout step</td></tr>
+        <tr><td><strong>Market</strong></td><td>The customer problem solved, with beta stories</td><td>Blog, social, press, events</td><td>At GA</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout teal"><p><strong>Message discipline:</strong> lead with the customer's problem and outcome, not the feature list. "Spot booking-pace changes a week earlier" beats "New analytics dashboard with 14 widgets".</p></div>
+  </section>
+
+  <!-- 16 -->
+  <section id="feedback">
+    <h2><span class="num">16</span>Feedback and continuous improvement</h2>
+    <p>Customers love products that visibly get better because of what they said. Build a loop that runs at least every month:</p>
+    <ol>
+      <li><strong>Collect</strong> from every channel: in-app feedback, CSAT/NPS comments, support tickets, sales and CS notes, usage analytics, follow-up interviews.</li>
+      <li><strong>Centralise and tag</strong> in one place, linked to the customer and segment, so you can see patterns rather than the loudest voice.</li>
+      <li><strong>Prioritise</strong> with a transparent framework (e.g. RICE: reach, impact, confidence, effort) against your KPIs.</li>
+      <li><strong>Close the loop</strong>: tell customers what you built because of them ("You asked, we shipped"), and tell them honestly when you won't build something and why.</li>
+      <li><strong>Hold a retrospective</strong> 30 days after GA: what worked in discovery, delivery and launch, and what you'll change next time. Write it down.</li>
+    </ol>
+    <div class="callout"><p><strong>Know when to stop, too.</strong> If a feature misses its adoption and value targets after two improvement cycles, go back to discovery, or retire it. Sunsetting a weak feature is part of building a product people love.</p></div>
+  </section>
+
+  <section>
+    <h2>Closing thought</h2>
+    <p>Customer-loved products are rarely the result of a brilliant idea. They come from disciplined curiosity: conversations that explore the customer's business deeply, engineering that names its risks early, metrics agreed before code, and releases that are gradual, observable and reversible. Above all, the team keeps listening after launch day. Run the loop, and keep running it.</p>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p>The scenario, targets and timelines in this article are illustrative and generalised, and they don't describe any specific company or customer. Adapt the frameworks to your own context and baselines.</p>
+    <p><a href="../">← Back to jigneshrana.github.io</a> · © 2026 Jignesh Rana</p>
+  </div>
+</footer>
+
+</body>
+</html>

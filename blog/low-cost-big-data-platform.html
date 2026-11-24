@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Big Data on a Small Budget: Building a Low-Cost, Fast Analytics Platform</title>
+<meta name="description" content="How to unify booking, search and operational data into one analytics platform for tens of dollars a month — six architectures, every cost element, and an honest Databricks comparison.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf6ee; --paper:#fffdf8; --ink:#1d2433; --muted:#5b6474; --line:#e7dfcf;
+    --accent:#b35c00; --accent-soft:#f6e6d3; --teal:#1f6f6b; --teal-soft:#dcefeb;
+    --red:#a8322d; --red-soft:#f7e1df; --gold:#c99a2e;
+    --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,-apple-system,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+  .wide{max-width:1040px;margin:0 auto;padding:0 24px}
+
+  /* hero */
+  header.hero{padding:88px 0 56px;border-bottom:1px solid var(--line);background:
+    radial-gradient(circle at 85% 20%, var(--accent-soft) 0, transparent 40%),
+    radial-gradient(circle at 10% 90%, var(--teal-soft) 0, transparent 35%)}
+  .kicker{font:600 12px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  h1{font:700 clamp(36px,5.4vw,58px)/1.08 var(--serif);letter-spacing:-.02em;margin:18px 0 20px}
+  .dek{font-size:20px;color:var(--muted);max-width:640px;margin:0}
+  .meta{margin-top:28px;font-size:14px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+  .meta span::before{content:"•";margin-right:18px;color:var(--line)}
+  .meta span:first-child::before{content:none}
+
+  /* toc */
+  nav.toc{margin:40px 0 0;padding:20px 24px;background:var(--paper);border:1px solid var(--line);border-radius:14px}
+  nav.toc strong{font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  nav.toc ol{margin:10px 0 0;padding-left:20px;columns:2;column-gap:32px;font-size:15px}
+  nav.toc a{color:var(--ink);text-decoration:none}
+  nav.toc a:hover{color:var(--accent)}
+
+  main section{padding:56px 0 8px}
+  h2{font:700 clamp(28px,3.6vw,36px)/1.15 var(--serif);letter-spacing:-.015em;margin:0 0 18px}
+  h2 .num{color:var(--accent);font-size:.7em;vertical-align:.25em;margin-right:10px;font-family:var(--mono);font-weight:500}
+  h3{font:600 20px/1.3 var(--sans);margin:32px 0 10px}
+  p{margin:0 0 18px}
+  ul,ol{padding-left:22px;margin:0 0 18px}
+  li{margin:4px 0}
+  code{font:14px var(--mono);background:var(--accent-soft);padding:2px 6px;border-radius:5px}
+
+  .tldr{background:var(--ink);color:#f3efe6;border-radius:16px;padding:28px 32px;margin:48px 0 0}
+  .tldr h4{margin:0 0 10px;font:600 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .tldr ul{margin:0;padding-left:20px}
+  .tldr li{margin:8px 0}
+  .tldr b{color:#fff}
+
+  .callout{border-left:4px solid var(--accent);background:var(--paper);padding:18px 22px;border-radius:0 12px 12px 0;margin:24px 0}
+  .callout.teal{border-color:var(--teal)}
+  .callout.red{border-color:var(--red);background:var(--red-soft)}
+  .callout p:last-child{margin:0}
+
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:28px 0}
+  .stat{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .stat .v{font:700 28px/1.1 var(--serif);color:var(--teal)}
+  .stat .l{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4}
+
+  figure{margin:32px 0}
+  figure.diagram{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px;width:min(1000px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+  figcaption{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
+  svg text{font-family:var(--sans)}
+
+  /* tables */
+  .tbl{overflow-x:auto;margin:24px 0;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+  table{border-collapse:collapse;width:100%;font-size:15px}
+  th,td{padding:12px 16px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font:600 12px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:#f6f0e4}
+  tr:last-child td{border-bottom:0}
+  td.num,th.num{text-align:right;font-family:var(--mono);font-size:14px;white-space:nowrap}
+  tr.best td{background:var(--teal-soft)}
+  tr.total td{font-weight:600;background:#f6f0e4}
+  .tbl.xl{width:min(1060px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+  .tbl.xl th.num{font-family:var(--sans);font-size:11.5px}
+  .tbl.xl th,.tbl.xl td{padding:12px 10px}
+  .tbl.xl td.num{font-size:13px}
+
+  /* architecture cards */
+  .arch{display:grid;gap:22px;margin:28px 0}
+  .card{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:26px 28px;position:relative}
+  .card .tag{display:inline-block;margin-bottom:12px;font:600 11px var(--sans);letter-spacing:.1em;text-transform:uppercase;padding:5px 10px;border-radius:99px;background:var(--accent-soft);color:var(--accent)}
+  .card .tag.teal{background:var(--teal-soft);color:var(--teal)}
+  .card .tag.red{background:var(--red-soft);color:var(--red)}
+  .card h3{margin:0 0 4px;font:700 22px/1.25 var(--serif);}
+  .card .sub{color:var(--muted);font-size:15px;margin:0 0 16px}
+  .flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 18px}
+  .flow span{font:500 13px var(--mono);background:var(--bg);border:1px solid var(--line);padding:5px 10px;border-radius:8px}
+  .flow i{font-style:normal;color:var(--accent)}
+  .pc{display:grid;grid-template-columns:1fr 1fr;gap:20px;font-size:15px}
+  .pc h5{margin:0 0 6px;font:600 12px var(--sans);letter-spacing:.1em;text-transform:uppercase}
+  .pc .pro h5{color:var(--teal)} .pc .con h5{color:var(--red)}
+  .pc ul{margin:0;padding-left:18px}
+  .price{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap}
+  .price b{font:700 26px var(--serif);color:var(--ink)}
+  .price small{color:var(--muted);font-size:13px}
+
+  /* bar chart */
+  .chart{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:26px 28px;margin:28px 0}
+  .chart h4{margin:0 0 4px;font:700 20px var(--serif)}
+  .chart .cap{margin:0 0 20px;color:var(--muted);font-size:14px}
+  .bar{display:grid;grid-template-columns:230px 1fr 64px;align-items:center;gap:14px;margin:10px 0;font-size:14px}
+  .bar .track{height:22px;background:var(--bg);border-radius:6px;overflow:hidden}
+  .bar .fill{height:100%;border-radius:6px;background:var(--accent);opacity:.85}
+  .bar.cheap .fill{background:var(--teal)}
+  .bar.dear .fill{background:var(--red)}
+  .bar .val{font:500 14px var(--mono);text-align:right}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin:24px 0}
+  .tip{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:20px}
+  .tip h4{margin:0 0 6px;font:600 16px var(--sans)}
+  .tip p{margin:0;font-size:15px;color:var(--muted)}
+
+  .decide{display:grid;gap:12px;margin:24px 0}
+  .decide div{display:grid;grid-template-columns:1fr auto;gap:16px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:14px 18px;font-size:15px}
+  .decide b{font:600 13px var(--mono);color:var(--teal);white-space:nowrap}
+
+  footer{margin-top:72px;padding:40px 0 64px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+  @media (max-width:760px){
+    body{font-size:16px}
+    .stats{grid-template-columns:1fr 1fr}
+    nav.toc ol{columns:1}
+    .pc,.grid2{grid-template-columns:1fr}
+    .bar{grid-template-columns:1fr 56px}
+    .bar .lbl{grid-column:1 / -1;margin-bottom:-6px}
+  }
+
+  /* site bar (link back to the home page) */
+  .sitebar{position:sticky;top:0;z-index:20;background:rgba(250,246,238,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .sitebar .in{max-width:1040px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:15px}
+  .sitebar a{color:var(--ink);text-decoration:none;font-weight:600}
+  .sitebar a:hover{color:var(--accent)}
+  .sitebar .all{font-weight:500;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="sitebar"><div class="in"><a href="../">← Jignesh A. Rana</a><a class="all" href="../#writing">More writing</a></div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Data Engineering · Architecture · FinOps</div>
+    <h1>Big Data on a Small Budget: Building a Low-Cost, Fast Analytics Platform</h1>
+    <p class="dek">How we planned to unify booking, search and operations data from five products into one platform. Building the pipeline turned out to cost tens of dollars a month. Serving it to 40,000 customers was the real cost problem.</p>
+    <div class="meta"><span>By Jignesh Rana</span><span>November 2026</span><span>18 min read</span></div>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+
+  <div class="tldr">
+    <h4>TL;DR</h4>
+    <ul>
+      <li><b>Size your data before you pick a tool.</b> 100M+ records sounded like big data. In columnar format it was a few gigabytes.</li>
+      <li><b>Storage is almost never the bill.</b> Compute that stays switched on is. In our pilot, object storage was under 2% of the monthly cost.</li>
+      <li><b>For small-to-medium data, S3 + Parquet/Iceberg + a serverless or on-demand engine</b> (Athena, DuckDB, short-lived Spark) is the cheapest and often the fastest option.</li>
+      <li><b>Always-on warehouses and Kubernetes clusters</b> add a fixed cost of roughly $75–$400 a month before you run a single query.</li>
+      <li><b>Databricks costs more at small scale</b>, but it pays for itself once you need heavy Spark ETL, ML, governance and many collaborating engineers.</li>
+      <li><b>The pipeline is not the product.</b> 40,000 customers running 100–200 queries an hour each is about 2 billion queries a month. On <b>pay-per-use</b> engines (Databricks serverless SQL, Athena, Redshift Serverless) that costs roughly <b>$35k–$500k a month</b>. On <b>fixed-capacity</b> serving, either provisioned Redshift behind the application server (no per-query charge) or a precomputed serving database, it costs about <b>$3.5k–$4k</b>. The pipeline itself is under 15% of the total in every option (see the combined table in section 08).</li>
+      <li><b>Budget the total cost of the product</b> (ingest, ETL, storage, <em>serving</em>, data egress, monitoring, people), and track it as <b>cost per customer per month</b>.</li>
+    </ul>
+  </div>
+
+  <nav class="toc">
+    <strong>In this article</strong>
+    <ol>
+      <li><a href="#problem">The problem</a></li>
+      <li><a href="#sizing">Size the data first</a></li>
+      <li><a href="#reference">Reference architecture</a></li>
+      <li><a href="#options">Six architectures compared</a></li>
+      <li><a href="#cost-elements">Cost elements</a></li>
+      <li><a href="#comparison">Cost comparison (pipeline)</a></li>
+      <li><a href="#serving">The hidden cost: serving 40,000 customers</a></li>
+      <li><a href="#tco">Total cost of the product</a></li>
+      <li><a href="#lesson">Where the money actually went</a></li>
+      <li><a href="#fast">Making it fast</a></li>
+      <li><a href="#change">Schema drift &amp; deltas</a></li>
+      <li><a href="#decide">How to choose</a></li>
+      <li><a href="#pricing">Pricing reference</a></li>
+    </ol>
+  </nav>
+
+  <!-- 1 -->
+  <section id="problem">
+    <h2><span class="num">01</span>The problem</h2>
+    <p>Picture a hospitality-tech company that runs several products side by side: a <strong>channel manager</strong> that pushes inventory to online travel agencies, a <strong>booking engine</strong> on hotel websites, a <strong>property management system (PMS)</strong>, a <strong>metasearch</strong> connector, and a <strong>B2B partner</strong> platform. Each one holds valuable data. None of them talk to each other.</p>
+    <p>So the questions the business cares about most cut across every silo, and nobody can answer them:</p>
+    <ul>
+      <li>Which demand signals (searches, lookups, partner requests) actually turn into bookings, and through which channel?</li>
+      <li>Where do guests drop out of the funnel that runs from search to selection to booking?</li>
+      <li>Which hotel clusters and dates will be in high demand next month?</li>
+      <li>How do length of stay, booking window, cancellations and no-shows change by source and rate plan?</li>
+      <li>What are ADR, RevPAR and TRevPAR across the portfolio, all at once?</li>
+    </ul>
+    <p><strong>The hypothesis:</strong> put search, booking, financial and operational data into one repository and you can see patterns that stay invisible inside any single system. That gives you better demand forecasting, better conversion analysis and clear attribution by booking source.</p>
+
+    <h3>The three constraints that shaped every decision</h3>
+    <div class="grid2">
+      <div class="tip"><h4>🧬 Schema flexibility</h4><p>Source systems change. New fields appear, and types drift. The platform has to absorb those changes without a rewrite.</p></div>
+      <div class="tip"><h4>🔁 Delta management</h4><p>Bookings don't sit still. They get modified, cancelled, voided and refunded. Records have to be updated, not just appended.</p></div>
+      <div class="tip"><h4>💰 Cost-effective querying</h4><p>This was a new initiative with no proven ROI yet. It had to start cheap and scale only when it earned that.</p></div>
+      <div class="tip"><h4>⚡ Speed to insight</h4><p>Leadership wanted dashboards in weeks, not quarters. That meant as little infrastructure to build and run as possible.</p></div>
+    </div>
+  </section>
+
+  <!-- 2 -->
+  <section id="sizing">
+    <h2><span class="num">02</span>Size the data first (the step everyone skips)</h2>
+    <p>Before comparing a single vendor, we measured. A booking record across stay, guest, finance and hotel attributes has about <strong>58 columns</strong>. We exported 100 and then 200 rows as CSV and weighed the files: about 44 KB and 88 KB. That works out to <strong>roughly 0.5 KB per booking row</strong>.</p>
+
+    <div class="stats">
+      <div class="stat"><div class="v">100M+</div><div class="l">historical booking records</div></div>
+      <div class="stat"><div class="v">~60 GB</div><div class="l">total as raw CSV (100M+ × 0.5 KB)</div></div>
+      <div class="stat"><div class="v">~100k</div><div class="l">new records per day (~70 per minute)</div></div>
+      <div class="stat"><div class="v">8–13×</div><div class="l">compression we saw going from CSV to Parquet</div></div>
+    </div>
+
+    <p>When we converted a sample of about 1.4 million bookings to Parquet, it took up around 50 MB, against roughly 650 MB as CSV. Even being conservative, the <em>entire</em> history fits in <strong>5–20 GB of Parquet</strong>, and it grows by only a few gigabytes a year.</p>
+
+    <div class="callout">
+      <p><strong>The reframe:</strong> at S3 Standard pricing of about $0.023 per GB-month, storing the full history costs <strong>less than a dollar a month</strong>. This is "medium data". The architecture decision is really a <em>compute</em> decision: what runs, for how long, and whether it sits idle.</p>
+    </div>
+
+    <p>We still designed for growth, because more sources (search logs, clickstream, partner traffic) will add one to two orders of magnitude. That's why the comparison later uses a <strong>1 TB curated lake</strong> as the planning baseline.</p>
+  </section>
+
+  <!-- 3 -->
+  <section id="reference">
+    <h2><span class="num">03</span>The reference architecture</h2>
+    <p>Whatever engine you pick, the shape of the data stays the same: a layered <strong>lakehouse</strong> (also called the medallion pattern) on cheap object storage, using open file and table formats so you can swap engines later without migrating data.</p>
+
+  <figure class="diagram">
+    <svg viewBox="0 0 1000 360" width="100%" role="img" aria-label="Reference lakehouse architecture: five sources feed ingestion, then bronze, silver and gold layers on object storage, then BI and ML consumers, with orchestration and governance spanning all layers">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b35c00"/></marker>
+      </defs>
+      <!-- sources -->
+      <text x="20" y="28" font-size="11" font-weight="600" fill="#5b6474" letter-spacing="1.5">SOURCES</text>
+      <g font-size="13" fill="#1d2433">
+        <rect x="20" y="42" width="150" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="95" y="66" text-anchor="middle">Channel manager</text>
+        <rect x="20" y="90" width="150" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="95" y="114" text-anchor="middle">Booking engine</text>
+        <rect x="20" y="138" width="150" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="95" y="162" text-anchor="middle">PMS</text>
+        <rect x="20" y="186" width="150" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="95" y="210" text-anchor="middle">Metasearch feeds</text>
+        <rect x="20" y="234" width="150" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="95" y="258" text-anchor="middle">B2B partner APIs</text>
+      </g>
+      <path d="M175 157 H215" stroke="#b35c00" stroke-width="2" marker-end="url(#ar)"/>
+      <!-- ingest -->
+      <rect x="220" y="112" width="120" height="90" rx="12" fill="#f6e6d3" stroke="#b35c00"/>
+      <text x="280" y="148" text-anchor="middle" font-size="14" font-weight="600" fill="#1d2433">Ingest</text>
+      <text x="280" y="168" text-anchor="middle" font-size="11" fill="#5b6474">batch exports</text>
+      <text x="280" y="184" text-anchor="middle" font-size="11" fill="#5b6474">+ CDC / events</text>
+      <path d="M345 157 H375" stroke="#b35c00" stroke-width="2" marker-end="url(#ar)"/>
+      <!-- lake -->
+      <rect x="380" y="40" width="430" height="236" rx="16" fill="none" stroke="#1f6f6b" stroke-dasharray="5 5"/>
+      <text x="395" y="62" font-size="11" font-weight="600" fill="#1f6f6b" letter-spacing="1.5">OBJECT STORAGE (S3) · OPEN FORMATS</text>
+      <g>
+        <rect x="395" y="80" width="125" height="180" rx="12" fill="#efe3cf"/>
+        <text x="457" y="110" text-anchor="middle" font-size="15" font-weight="700" fill="#8a5a1c">Bronze</text>
+        <text x="457" y="134" text-anchor="middle" font-size="11.5" fill="#1d2433">raw, immutable</text>
+        <text x="457" y="152" text-anchor="middle" font-size="11.5" fill="#1d2433">CSV / JSON as landed</text>
+        <text x="457" y="170" text-anchor="middle" font-size="11.5" fill="#1d2433">partitioned by date</text>
+        <text x="457" y="230" text-anchor="middle" font-size="11" fill="#5b6474">replayable</text>
+      </g>
+      <path d="M522 170 H540" stroke="#b35c00" stroke-width="2" marker-end="url(#ar)"/>
+      <g>
+        <rect x="543" y="80" width="125" height="180" rx="12" fill="#e4e8ec"/>
+        <text x="605" y="110" text-anchor="middle" font-size="15" font-weight="700" fill="#4a5568">Silver</text>
+        <text x="605" y="134" text-anchor="middle" font-size="11.5" fill="#1d2433">cleaned, typed</text>
+        <text x="605" y="152" text-anchor="middle" font-size="11.5" fill="#1d2433">deduped, PII masked</text>
+        <text x="605" y="170" text-anchor="middle" font-size="11.5" fill="#1d2433">Iceberg / Delta</text>
+        <text x="605" y="230" text-anchor="middle" font-size="11" fill="#5b6474">MERGE upserts</text>
+      </g>
+      <path d="M670 170 H688" stroke="#b35c00" stroke-width="2" marker-end="url(#ar)"/>
+      <g>
+        <rect x="691" y="80" width="105" height="180" rx="12" fill="#f3e3b5"/>
+        <text x="743" y="110" text-anchor="middle" font-size="15" font-weight="700" fill="#8a6a10">Gold</text>
+        <text x="743" y="134" text-anchor="middle" font-size="11.5" fill="#1d2433">business marts</text>
+        <text x="743" y="152" text-anchor="middle" font-size="11.5" fill="#1d2433">ADR, RevPAR</text>
+        <text x="743" y="170" text-anchor="middle" font-size="11.5" fill="#1d2433">funnel, pickup</text>
+        <text x="743" y="230" text-anchor="middle" font-size="11" fill="#5b6474">pre-aggregated</text>
+      </g>
+      <path d="M815 157 H845" stroke="#b35c00" stroke-width="2" marker-end="url(#ar)"/>
+      <!-- consumers -->
+      <text x="850" y="28" font-size="11" font-weight="600" fill="#5b6474" letter-spacing="1.5">CONSUMERS</text>
+      <g font-size="13" fill="#1d2433">
+        <rect x="850" y="66" width="130" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="915" y="90" text-anchor="middle">BI dashboards</text>
+        <rect x="850" y="114" width="130" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="915" y="138" text-anchor="middle">Ad-hoc SQL</text>
+        <rect x="850" y="162" width="130" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="915" y="186" text-anchor="middle">Forecast / ML</text>
+        <rect x="850" y="210" width="130" height="38" rx="8" fill="#fff" stroke="#e7dfcf"/><text x="915" y="234" text-anchor="middle">APIs / exports</text>
+      </g>
+      <!-- governance bar -->
+      <rect x="220" y="300" width="760" height="40" rx="10" fill="#1d2433"/>
+      <text x="600" y="325" text-anchor="middle" font-size="13" fill="#f3efe6">Orchestration (Airflow / Step Functions) · data quality checks · catalog · access control · cost monitoring</text>
+    </svg>
+    <figcaption>The engine is swappable; the layers and open formats are not. That's what keeps future migrations cheap.</figcaption>
+  </figure>
+
+    <p>A few decisions here do most of the work of keeping costs down:</p>
+    <ul>
+      <li><strong>Columnar formats (Parquet)</strong> cut both storage and scan cost, because engines read only the columns a query needs.</li>
+      <li><strong>An open table format (Apache Iceberg or Delta Lake)</strong> on top of Parquet adds ACID transactions, <code>MERGE</code> upserts and schema evolution. That covers two of our three constraints.</li>
+      <li><strong>Gold tables are pre-aggregated</strong>, so dashboards hit kilobytes, not gigabytes.</li>
+      <li><strong>Orchestration is open source or serverless</strong>, so no scheduler server sits idle.</li>
+    </ul>
+  </section>
+
+  <!-- 4 -->
+  <section id="options">
+    <h2><span class="num">04</span>Six architectures we evaluated</h2>
+    <p>Every option below uses S3 as the storage layer. They differ in how the data gets transformed and queried, and that's where the cost and operational effort really sit. The monthly figures use the shared assumptions in <a href="#comparison">section 06</a>.</p>
+
+  <div class="arch">
+
+    <article class="card">
+      <span class="tag teal">Cheapest · Fastest at this scale</span>
+      <h3>A. DIY lake: S3 + on-demand EC2</h3>
+      <p class="sub">Run your own engines on instances that start for the job and stop afterwards.</p>
+      <div class="flow"><span>S3 raw</span><i>→</i><span>EC2 / ECS task: Spark · DuckDB · Polars</span><i>→</i><span>Parquet / Iceberg</span><i>→</i><span>DuckDB · Trino</span><i>→</i><span>BI</span></div>
+      <div class="pc">
+        <div class="pro"><h5>Pros</h5><ul><li>Lowest infrastructure cost, since you pay only while the instance runs</li><li>Free choice of frameworks and libraries</li><li>A single DuckDB node on tens of GB is extremely fast</li><li>Spot instances cut compute a further 60–70%</li></ul></div>
+        <div class="con"><h5>Cons</h5><ul><li>You own patching, scaling, retries and failures</li><li>Not serverless, so ops discipline is required</li><li>Concurrency for many BI users needs extra work</li></ul></div>
+      </div>
+      <div class="price"><small>Storage + ETL (60 h) + query node (40 h)</small><b>≈ $65 / mo</b></div>
+    </article>
+
+    <article class="card">
+      <span class="tag teal">Best value · Least ops</span>
+      <h3>B. Serverless lake: S3 + Glue Catalog + Athena</h3>
+      <p class="sub">No servers for querying at all. You pay per terabyte scanned.</p>
+      <div class="flow"><span>S3 raw</span><i>→</i><span>Lambda / small ETL task</span><i>→</i><span>Iceberg tables</span><i>→</i><span>Glue Data Catalog</span><i>→</i><span>Athena SQL</span><i>→</i><span>BI</span></div>
+      <div class="pc">
+        <div class="pro"><h5>Pros</h5><ul><li>Zero idle cost: no queries, no bill</li><li>Standard SQL, with JDBC/ODBC for BI tools</li><li>Native Iceberg support for <code>MERGE</code>, time travel and schema evolution</li><li>Parquet plus partitioning keeps scans tiny</li></ul></div>
+        <div class="con"><h5>Cons</h5><ul><li>A careless <code>SELECT *</code> on raw CSV gets expensive</li><li>Very high-concurrency dashboards can queue</li><li>Running Glue for ETL costs more than a small container</li></ul></div>
+      </div>
+      <div class="price"><small>Storage + ETL + ~2 TB scanned/month at $5/TB</small><b>≈ $60 / mo</b></div>
+    </article>
+
+    <article class="card">
+      <span class="tag">Scales to heavy ETL</span>
+      <h3>C. Managed Spark: S3 + EMR (transient or Serverless)</h3>
+      <p class="sub">Managed Hadoop/Spark that spins up for the batch and shuts down afterwards.</p>
+      <div class="flow"><span>S3 raw</span><i>→</i><span>EMR Spark job</span><i>→</i><span>Iceberg / Delta</span><i>→</i><span>Athena · Trino</span><i>→</i><span>BI / ML</span></div>
+      <div class="pc">
+        <div class="pro"><h5>Pros</h5><ul><li>Proven for terabyte-scale joins and transforms</li><li>No cluster management with EMR Serverless</li><li>Same Spark code scales from GB to PB</li></ul></div>
+        <div class="con"><h5>Cons</h5><ul><li>An EMR fee on top of EC2</li><li>Spark is overkill for a few GB</li><li>Cluster start-up adds minutes to each run</li></ul></div>
+      </div>
+      <div class="price"><small>3-node transient cluster, 60 h + Athena queries</small><b>≈ $80 / mo</b></div>
+    </article>
+
+    <article class="card">
+      <span class="tag">BI-friendly warehouse</span>
+      <h3>D. Warehouse: S3 + Amazon Redshift (provisioned or Serverless)</h3>
+      <p class="sub">Load curated data into a columnar warehouse, and keep querying cold data in the lake through Spectrum.</p>
+      <div class="flow"><span>S3 raw</span><i>→</i><span>ETL job</span><i>→</i><span>Redshift tables (hot)</span><i>+</i><span>Spectrum on S3 (cold)</span><i>→</i><span>BI</span></div>
+      <div class="pc">
+        <div class="pro"><h5>Pros</h5><ul><li>Fast, predictable performance for complex joins</li><li>Mature BI integration, which helps business adoption</li><li>Serverless option bills only for active time</li><li><strong>Provisioned clusters don't charge per query.</strong> That makes them a strong fixed-cost backend for application traffic (see section 07).</li></ul></div>
+        <div class="con"><h5>Cons</h5><ul><li>A provisioned node runs 24/7: even the smallest RA3 node is about $400 a month</li><li>Data lives in two places (lake and warehouse)</li><li>Serverless stays "awake" if dashboards auto-refresh</li><li>Note: DC2 nodes are deprecated, so plan on RA3 or Serverless</li></ul></div>
+      </div>
+      <div class="price"><small>Provisioned ra3.large 24/7 ≈ $475 · Serverless 4 RPU × 40 h ≈ $135</small><b>$135 – $475 / mo</b></div>
+    </article>
+
+    <article class="card">
+      <span class="tag red">Hidden fixed cost</span>
+      <h3>E. Containerised pipelines on managed Kubernetes (EKS)</h3>
+      <p class="sub">The "we already run Kubernetes" option. Pipeline pods write to S3 and load a warehouse.</p>
+      <div class="flow"><span>S3 raw</span><i>→</i><span>EKS jobs (pods)</span><i>→</i><span>S3 / warehouse</span><i>→</i><span>BI</span></div>
+      <div class="pc">
+        <div class="pro"><h5>Pros</h5><ul><li>Reuses existing CI/CD, images and team skills</li><li>Good fit for streaming or always-on micro-services</li><li>Portable across clouds</li></ul></div>
+        <div class="con"><h5>Cons</h5><ul><li>The control plane alone is about $75 a month per cluster</li><li>Worker nodes usually stay on even when no job runs</li><li>Extended-support Kubernetes versions cost 6× more</li></ul></div>
+      </div>
+      <div class="price"><small>Control plane + 1 always-on node + EBS + queries</small><b>≈ $190 / mo</b></div>
+    </article>
+
+    <article class="card">
+      <span class="tag">Unified platform</span>
+      <h3>F. Databricks Lakehouse on AWS</h3>
+      <p class="sub">A managed Spark, Delta Lake, SQL and ML platform that runs over your own S3 bucket.</p>
+      <div class="flow"><span>S3 raw</span><i>→</i><span>Auto Loader / Lakeflow jobs</span><i>→</i><span>Delta bronze · silver · gold</span><i>→</i><span>Serverless SQL warehouse</span><i>→</i><span>BI · ML</span></div>
+      <div class="pc">
+        <div class="pro"><h5>Pros</h5><ul><li>One platform for ETL, SQL, notebooks, ML and feature stores</li><li>Delta Lake, schema evolution, CDC and Unity Catalog governance built in</li><li>Photon engine and auto-optimisation make big workloads fast</li><li>Per-second, pay-per-use serverless compute</li></ul></div>
+        <div class="con"><h5>Cons</h5><ul><li>Two bills: Databricks DBUs <em>plus</em> AWS infrastructure (on classic compute)</li><li>Serverless SQL at about $0.70 per DBU makes small BI workloads pricey</li><li>Easy to overspend: all-purpose clusters cost 3–4× more per DBU than job clusters</li><li>Not built to be the per-request backend for thousands of customers. Serverless SQL at app-level concurrency gets very expensive (see section 07).</li></ul></div>
+      </div>
+      <div class="price"><small>3-node job cluster 60 h + 2X-Small serverless SQL 40 h</small><b>≈ $190 / mo</b></div>
+    </article>
+
+  </div>
+  </section>
+
+  <!-- 5 -->
+  <section id="cost-elements">
+    <h2><span class="num">05</span>The cost elements, and which ones bite</h2>
+    <p>A cloud data platform bill is made of the line items below. When we first estimated, we looked only at the first three. The rest showed up on the invoice.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Element</th><th>How it's billed</th><th>Watch out for</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Object storage</strong></td><td>Per GB-month (~$0.023 on S3 Standard)</td><td>Rarely the problem. Use lifecycle rules to move old raw data to cheaper storage tiers.</td></tr>
+        <tr><td><strong>ETL compute</strong></td><td>Per instance-second, DPU-hour or DBU</td><td>Oversized clusters, and jobs that never shut down</td></tr>
+        <tr><td><strong>Query compute</strong></td><td>Per TB scanned (Athena, Spectrum) or per hour (warehouse)</td><td>Unpartitioned CSV scans; warehouses running 24/7 for 2 hours of real use</td></tr>
+        <tr><td><strong>Fixed platform fees</strong></td><td>Per cluster-hour (EKS control plane, provisioned nodes)</td><td>The cost you pay at zero usage. This is the real enemy of small projects.</td></tr>
+        <tr><td><strong>Requests &amp; small files</strong></td><td>Per 1,000 PUT/GET requests</td><td>Writing thousands of tiny files multiplies request costs and slows every query</td></tr>
+        <tr><td><strong>Networking</strong></td><td>NAT gateway hourly + per GB; cross-AZ, cross-region and internet egress</td><td>Private subnets pulling data through a NAT gateway; BI tools outside the region</td></tr>
+        <tr><td><strong>Catalog &amp; orchestration</strong></td><td>Per object or request; scheduler instance</td><td>Usually small, unless you run a dedicated always-on scheduler VM</td></tr>
+        <tr><td><strong>Logs &amp; monitoring</strong></td><td>Per GB ingested and stored</td><td>Verbose Spark logs kept forever</td></tr>
+        <tr><td><strong>Container registry, block storage, build</strong></td><td>Per GB-month, per build minute</td><td>Orphaned volumes and images</td></tr>
+        <tr><td><strong>People &amp; operations</strong></td><td>Engineer time</td><td>The cheapest infrastructure can be the most expensive to run. Count the hours.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <!-- 6 -->
+  <section id="comparison">
+    <h2><span class="num">06</span>Cost comparison: building the pipeline</h2>
+    <p>This section compares the cost of <em>building and refreshing</em> the data: landing it, transforming it, storing it, and letting a small group of analysts query it. Hold that thought, because <a href="#serving">section 07</a> shows why this is only half the bill.</p>
+    <div class="callout teal">
+      <p><strong>Assumptions for an apples-to-apples comparison:</strong> 1 TB of curated data in S3 · daily batch ETL of about 2 hours (60 h/month) · about 40 hours a month of active interactive/BI querying · about 2 TB scanned per month · US East on-demand list prices, November 2026 · no reserved or spot discounts · excludes engineer time, networking and BI licences · all figures rounded. *Storage includes S3 plus Redshift managed storage or EBS where used.</p>
+    </div>
+
+    <div class="tbl"><table>
+      <thead><tr><th>Architecture</th><th class="num">Storage*</th><th class="num">ETL</th><th class="num">Query</th><th class="num">Fixed</th><th class="num">Total / mo</th></tr></thead>
+      <tbody>
+        <tr class="best"><td>B. S3 + Athena (serverless)</td><td class="num">$25</td><td class="num">$25</td><td class="num">$10</td><td class="num">$0</td><td class="num"><strong>≈ $60</strong></td></tr>
+        <tr class="best"><td>A. S3 + on-demand EC2 (DIY)</td><td class="num">$25</td><td class="num">$25</td><td class="num">$15</td><td class="num">$0</td><td class="num"><strong>≈ $65</strong></td></tr>
+        <tr><td>C. S3 + EMR (transient)</td><td class="num">$25</td><td class="num">$45</td><td class="num">$10</td><td class="num">$0</td><td class="num">≈ $80</td></tr>
+        <tr><td>D2. S3 + Redshift Serverless</td><td class="num">$50</td><td class="num">$25</td><td class="num">$60</td><td class="num">$0</td><td class="num">≈ $135</td></tr>
+        <tr><td>E. Pipelines on EKS</td><td class="num">$35</td><td class="num">in nodes</td><td class="num">$10</td><td class="num">$145</td><td class="num">≈ $190</td></tr>
+        <tr><td>F. Databricks (jobs + serverless SQL)</td><td class="num">$25</td><td class="num">$55</td><td class="num">$110</td><td class="num">$0</td><td class="num">≈ $190</td></tr>
+        <tr><td>D1. S3 + Redshift provisioned (ra3.large)</td><td class="num">$50</td><td class="num">$25</td><td class="num">incl.</td><td class="num">$400</td><td class="num">≈ $475</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="chart">
+      <h4>Pipeline cost at 1 TB (rounded)</h4>
+      <p class="cap">USD per month, on-demand list prices. Teal is serverless or pay-per-use; red has a large always-on component.</p>
+      <div class="bar cheap"><span class="lbl">B. S3 + Athena</span><div class="track"><div class="fill" style="width:12.6%"></div></div><span class="val">$60</span></div>
+      <div class="bar cheap"><span class="lbl">A. S3 + on-demand EC2</span><div class="track"><div class="fill" style="width:13.7%"></div></div><span class="val">$65</span></div>
+      <div class="bar cheap"><span class="lbl">C. S3 + EMR transient</span><div class="track"><div class="fill" style="width:16.8%"></div></div><span class="val">$80</span></div>
+      <div class="bar"><span class="lbl">D2. Redshift Serverless</span><div class="track"><div class="fill" style="width:28.4%"></div></div><span class="val">$135</span></div>
+      <div class="bar dear"><span class="lbl">E. Pipelines on EKS</span><div class="track"><div class="fill" style="width:40%"></div></div><span class="val">$190</span></div>
+      <div class="bar"><span class="lbl">F. Databricks</span><div class="track"><div class="fill" style="width:40%"></div></div><span class="val">$190</span></div>
+      <div class="bar dear"><span class="lbl">D1. Redshift provisioned</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">$475</span></div>
+    </div>
+
+    <h3>How the Databricks number is built</h3>
+    <ul>
+      <li><strong>ETL:</strong> a small classic job cluster (driver + 2 workers, m5.xlarge) uses about 2 DBU/hour at about $0.15 per DBU, plus about $0.60/hour of EC2. Over 60 hours that's about $55.</li>
+      <li><strong>BI:</strong> a 2X-Small serverless SQL warehouse is 4 DBU/hour at about $0.70 per DBU, which is $2.80/hour. Over 40 active hours (with auto-stop) that's about $110.</li>
+      <li><strong>Levers:</strong> spot workers, a classic SQL warehouse for steady loads, committed-use discounts, or answering ad-hoc SQL with Athena over the same Delta/Iceberg tables.</li>
+    </ul>
+
+    <h3>What changes at 10 TB?</h3>
+    <p>Storage rises to about $240 a month, and it's the <em>same for every option</em>. Scan-based query cost grows in step with data scanned, while warehouse and cluster costs stay flat until you need bigger nodes. That's why the gap narrows as data and query volume grow, and why managed platforms such as Databricks or a right-sized Redshift become attractive once workloads are heavy and steady rather than small and bursty.</p>
+    <div class="callout"><p><strong>Reserved pricing changes the math for always-on options.</strong> If a warehouse truly runs 24/7, reserved nodes or committed-use plans bring the effective rate down a lot. Commit only after a few months of measured usage, though.</p></div>
+  </section>
+
+  <!-- 7 -->
+  <section id="serving">
+    <h2><span class="num">07</span>The hidden cost: serving 40,000 customers</h2>
+    <p>Every number so far assumed a few analysts running a few hundred queries a month. But the point of the platform was to put insights <em>in front of customers</em>, inside the product. That changes the economics completely. The question stops being "what does the architecture cost?" and becomes <strong>"what does it cost to serve this feature to every customer, every hour?"</strong></p>
+
+    <div class="stats">
+      <div class="stat"><div class="v">40,000</div><div class="l">customer accounts using the feature</div></div>
+      <div class="stat"><div class="v">100–200</div><div class="l">queries per customer per hour (dashboard widgets, filters, refreshes)</div></div>
+      <div class="stat"><div class="v">~1,700</div><div class="l">queries per second on average, ~2,200 at peak</div></div>
+      <div class="stat"><div class="v">~2.2B</div><div class="l">queries per month (12 active hours a day)</div></div>
+    </div>
+
+    <p>At this volume, per-query and per-cluster pricing that looked trivial for analysts adds up very quickly. Data warehouses and lakehouse SQL engines are built for <em>analysts</em>: fewer, heavier queries. A customer-facing product generates the opposite pattern: millions of tiny, repetitive, latency-sensitive lookups.</p>
+
+    <h3>Option 1: pay-per-use engines queried directly by the app</h3>
+    <p>These engines bill for every query, scan or active second. That's ideal for a handful of analysts, and a trap at app scale:</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Engine</th><th>How the cost builds up</th><th class="num">≈ Monthly</th><th class="num">Per customer</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Databricks serverless SQL</strong></td><td>Small warehouse clusters (12 DBU/h × $0.70 = $8.40/h) kept running through 360 active hours. You need about 33 clusters if each sustains ~50 small queries a second (optimistic, heavily cached), or about 167 at ~10 a second (pessimistic).</td><td class="num">$100k – $500k</td><td class="num">$2.50 – $12.50</td></tr>
+        <tr><td><strong>Athena</strong></td><td>Every query is billed at a 10 MB minimum. 2.2B queries × 10 MB ≈ 21.6 PB "scanned" × $5/TB. This also runs into account concurrency quotas long before 2,000 queries a second.</td><td class="num">≈ $110k <small>(floor)</small></td><td class="num">≈ $2.75</td></tr>
+        <tr><td><strong>Redshift Serverless</strong></td><td>Assumes ~256 RPU held active through business hours to absorb the concurrency (256 × $0.375 × 360 h). Needs benchmarking, and could go higher.</td><td class="num">≈ $35k+</td><td class="num">≈ $0.90+</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="callout red"><p><strong>This is where a lakehouse becomes a costly affair.</strong> The ETL for this workload costs a few hundred dollars a month. Serving it straight from a pay-per-use SQL engine can cost as much as a <em>whole engineering team</em>. Nothing is wrong with the engine; its billing model is wrong for this access pattern.</p></div>
+
+    <h3>Option 2: provisioned Redshift behind the application server</h3>
+    <p>This is the pattern that worked well for us. A <strong>provisioned</strong> Redshift cluster bills by the node-hour, with no charge per query. The application server connects to it directly, so every extra customer query is effectively free <em>as long as it fits inside capacity you've already paid for</em>. The gold tables live in Redshift, so there's no extra serving database to sync.</p>
+
+    <div class="tbl"><table>
+      <thead><tr><th>Component</th><th>Sizing assumption</th><th class="num">≈ Monthly</th></tr></thead>
+      <tbody>
+        <tr><td>Redshift cluster</td><td>2 × ra3.xlplus at $1.086/node-hour on-demand (≈ $700 with 3-year reserved nodes)</td><td class="num">$1,600</td></tr>
+        <tr><td>Storage</td><td>S3 landing zone + 1 TB Redshift managed storage ($0.024/GB-month)</td><td class="num">$50</td></tr>
+        <tr><td>ETL into Redshift</td><td>Small on-demand jobs; aggregates built as materialized views inside the cluster</td><td class="num">$25</td></tr>
+        <tr><td>Cache</td><td>Valkey primary + replica, so Redshift sees about 10% of requests</td><td class="num">$400</td></tr>
+        <tr><td>API, egress, logs</td><td>Same as the other options</td><td class="num">$1,800</td></tr>
+        <tr class="total"><td>Total</td><td>≈ <strong>$0.10 per customer per month</strong> (≈ $0.07 with reserved nodes)</td><td class="num">≈ $3,900</td></tr>
+      </tbody>
+    </table></div>
+
+    <p>At the same 2.2 billion queries a month, this is roughly <strong>10–130× cheaper</strong> than the pay-per-use options, and on par with a dedicated serving database. The marginal cost of a query really is close to zero. You pay for capacity, not usage.</p>
+
+    <div class="callout"><p><strong>The fine print: "free" only up to the cluster's capacity.</strong></p>
+      <ul style="margin:8px 0 0">
+        <li><strong>Concurrency is finite.</strong> With manual workload management, a cluster has at most 50 query slots in total. Automatic WLM adjusts that dynamically, but it still has a ceiling. 1,700 queries a second at 50–100 ms each means 85–170 queries running at once, which is too many for a small cluster on its own. With a cache absorbing about 90% of requests, Redshift handles about 170 a second, or roughly 10–20 at once. That fits comfortably.</li>
+        <li><strong>Concurrency scaling isn't free forever.</strong> Each cluster earns about one free hour of concurrency scaling a day. Beyond that, extra clusters are billed per second at on-demand rates. If you lean on it for sustained load, the bill stops being fixed. Set usage limits.</li>
+        <li><strong>Latency.</strong> Expect tens to hundreds of milliseconds per query, not single-digit milliseconds. That's fine for dashboards; use a cache or key-value store for anything that must feel instant.</li>
+        <li><strong>Multi-tenant safety.</strong> Enforce tenant isolation with row-level security or tenant-scoped views, plus connection pooling in the app tier.</li>
+        <li><strong>Capacity planning.</strong> Monitor queue time, and add a node or resize before peaks such as month-end reporting.</li>
+      </ul>
+    </div>
+
+    <h3>Option 3: separate the analytics plane from a dedicated serving store</h3>
+    <p>If you need the lowest latency or very high concurrency, keep the lakehouse for what it's good at (transforming, history, ad-hoc analysis, ML). Then <strong>precompute per-customer results</strong> and serve them from a store built for high-concurrency point lookups, with a cache in front.</p>
+
+  <figure class="diagram">
+    <svg viewBox="0 0 1000 300" width="100%" role="img" aria-label="Two-plane architecture: an analytics plane with lake and Spark jobs that precompute per-tenant aggregates, feeding a serving plane with a Postgres or ClickHouse store, a Valkey cache, an API and the customer app">
+      <defs><marker id="ar3" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#b35c00"/></marker></defs>
+      <rect x="15" y="20" width="430" height="260" rx="16" fill="#f6f0e4" stroke="#e7dfcf"/>
+      <text x="35" y="46" font-size="11" font-weight="600" fill="#8a5a1c" letter-spacing="1.5">ANALYTICS PLANE · batch · cheap · flexible</text>
+      <rect x="35" y="70" width="120" height="70" rx="10" fill="#fff" stroke="#e7dfcf"/><text x="95" y="100" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2433">Lakehouse</text><text x="95" y="120" text-anchor="middle" font-size="11" fill="#5b6474">S3 · Iceberg/Delta</text>
+      <path d="M157 105 H183" stroke="#b35c00" stroke-width="2" marker-end="url(#ar3)"/>
+      <rect x="187" y="70" width="120" height="70" rx="10" fill="#fff" stroke="#e7dfcf"/><text x="247" y="96" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2433">Spark jobs</text><text x="247" y="114" text-anchor="middle" font-size="11" fill="#5b6474">Databricks / EMR</text><text x="247" y="130" text-anchor="middle" font-size="11" fill="#5b6474">hourly</text>
+      <path d="M309 105 H335" stroke="#b35c00" stroke-width="2" marker-end="url(#ar3)"/>
+      <rect x="339" y="70" width="92" height="70" rx="10" fill="#f3e3b5" stroke="#c99a2e"/><text x="385" y="96" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d2433">Per-tenant</text><text x="385" y="114" text-anchor="middle" font-size="12.5" font-weight="600" fill="#1d2433">aggregates</text><text x="385" y="130" text-anchor="middle" font-size="11" fill="#5b6474">gold</text>
+      <rect x="35" y="175" width="396" height="80" rx="10" fill="#fff" stroke="#e7dfcf" stroke-dasharray="4 4"/>
+      <text x="233" y="205" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2433">Internal users only</text>
+      <text x="233" y="226" text-anchor="middle" font-size="11.5" fill="#5b6474">analysts · data science · ML · ad-hoc SQL (low concurrency)</text>
+      <path d="M433 105 H520" stroke="#b35c00" stroke-width="2.5" marker-end="url(#ar3)"/>
+      <text x="476" y="95" text-anchor="middle" font-size="11" fill="#b35c00" font-weight="600">publish</text>
+      <rect x="525" y="20" width="460" height="260" rx="16" fill="#dcefeb" stroke="#bcdcd6"/>
+      <text x="545" y="46" font-size="11" font-weight="600" fill="#1f6f6b" letter-spacing="1.5">SERVING PLANE · always-on · fast · cheap per query</text>
+      <rect x="545" y="70" width="130" height="70" rx="10" fill="#fff" stroke="#bcdcd6"/><text x="610" y="96" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2433">Serving store</text><text x="610" y="114" text-anchor="middle" font-size="11" fill="#5b6474">Postgres / ClickHouse</text><text x="610" y="130" text-anchor="middle" font-size="11" fill="#5b6474">indexed by tenant</text>
+      <path d="M677 105 H703" stroke="#1f6f6b" stroke-width="2" marker-end="url(#ar3)"/>
+      <rect x="707" y="70" width="110" height="70" rx="10" fill="#fff" stroke="#bcdcd6"/><text x="762" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2433">Cache</text><text x="762" y="118" text-anchor="middle" font-size="11" fill="#5b6474">Valkey · 85–95% hits</text>
+      <path d="M819 105 H845" stroke="#1f6f6b" stroke-width="2" marker-end="url(#ar3)"/>
+      <rect x="849" y="70" width="120" height="70" rx="10" fill="#fff" stroke="#bcdcd6"/><text x="909" y="98" text-anchor="middle" font-size="13" font-weight="600" fill="#1d2433">API</text><text x="909" y="118" text-anchor="middle" font-size="11" fill="#5b6474">auth · tenant filter</text>
+      <path d="M909 142 V173" stroke="#1f6f6b" stroke-width="2" marker-end="url(#ar3)"/>
+      <rect x="545" y="177" width="424" height="78" rx="10" fill="#1f6f6b"/>
+      <text x="757" y="208" text-anchor="middle" font-size="14" font-weight="600" fill="#fff">40,000 customers · product dashboards &amp; APIs</text>
+      <text x="757" y="230" text-anchor="middle" font-size="11.5" fill="#dcefeb">~2,000 requests/sec · sub-100 ms · cost scales with requests, not scans</text>
+    </svg>
+    <figcaption>Heavy compute runs once per refresh in the analytics plane. Customers only ever read small, precomputed results.</figcaption>
+  </figure>
+
+    <h3>What the serving layer costs</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Component</th><th>Sizing assumption</th><th class="num">≈ Monthly</th></tr></thead>
+      <tbody>
+        <tr><td>Precompute jobs (Spark)</td><td>8-node job cluster, ~15 minutes every hour, all day</td><td class="num">$400</td></tr>
+        <tr><td>Serving database</td><td>Aurora PostgreSQL db.r7g.xlarge: writer + 1 reader (~$404 each), plus storage and I/O</td><td class="num">$900</td></tr>
+        <tr><td>Cache</td><td>Valkey cache.r7g.xlarge, primary + replica (~$0.28/h each)</td><td class="num">$400</td></tr>
+        <tr><td>API layer</td><td>~8 small containers + load balancer</td><td class="num">$700</td></tr>
+        <tr><td>Data egress</td><td>2.2B responses × ~4 KB compressed ≈ 8.6 TB at ~$0.09/GB</td><td class="num">$800</td></tr>
+        <tr><td>Logs &amp; monitoring</td><td>Sampled request logs, metrics, traces</td><td class="num">$300</td></tr>
+        <tr><td>Lake storage</td><td>From the pipeline comparison above</td><td class="num">$25</td></tr>
+        <tr class="total"><td>Total serving + pipeline</td><td>≈ <strong>$0.09 per customer per month</strong></td><td class="num">≈ $3,500</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="chart">
+      <h4>Serving 2.2 billion queries a month</h4>
+      <p class="cap">Estimated USD per month. Red bills per use; teal is fixed capacity. The fixed-capacity bars are barely visible at this scale, which is the point.</p>
+      <div class="bar dear"><span class="lbl">Databricks SQL (pessimistic)</span><div class="track"><div class="fill" style="width:100%"></div></div><span class="val">$500k</span></div>
+      <div class="bar dear"><span class="lbl">Athena (10 MB floor)</span><div class="track"><div class="fill" style="width:22%"></div></div><span class="val">$110k</span></div>
+      <div class="bar dear"><span class="lbl">Databricks SQL (optimistic)</span><div class="track"><div class="fill" style="width:20%"></div></div><span class="val">$100k</span></div>
+      <div class="bar"><span class="lbl">Redshift Serverless</span><div class="track"><div class="fill" style="width:6.9%"></div></div><span class="val">$35k</span></div>
+      <div class="bar cheap"><span class="lbl">Provisioned Redshift + cache</span><div class="track"><div class="fill" style="width:0.78%;min-width:4px"></div></div><span class="val">$3.9k</span></div>
+      <div class="bar cheap"><span class="lbl">Precompute + serving layer</span><div class="track"><div class="fill" style="width:0.7%;min-width:4px"></div></div><span class="val">$3.5k</span></div>
+    </div>
+
+    <h3>The cheapest query is the one you never run</h3>
+    <p>Before scaling infrastructure, cut the number of queries. 100–200 queries per customer per hour usually comes from how the front end is built, not from real need:</p>
+    <div class="grid2">
+      <div class="tip"><h4>Match refresh to data freshness</h4><p>If the data refreshes hourly, a widget that polls every 30 seconds makes 119 wasted calls an hour. Cache per tenant with a time-to-live (TTL) equal to the refresh interval.</p></div>
+      <div class="tip"><h4>One call per screen, not per widget</h4><p>A dashboard with 12 widgets should make one API call that returns one payload, not 12 separate queries.</p></div>
+      <div class="tip"><h4>Push instead of poll</h4><p>Notify the client (WebSocket or server-sent events) when new data lands, so idle tabs cost nothing.</p></div>
+      <div class="tip"><h4>Use HTTP caching</h4><p>ETags and <code>304 Not Modified</code> responses mean repeat views cost almost no compute or egress.</p></div>
+      <div class="tip"><h4>Precompute common filters</h4><p>The top 20 filter combinations usually cover more than 90% of views. Precompute those and query live only for the long tail.</p></div>
+      <div class="tip"><h4>Set per-tenant limits</h4><p>Rate limits and query budgets stop one heavy customer or a runaway script from driving the bill.</p></div>
+    </div>
+    <p>Cutting effective queries from 150 to around 15 per customer per hour shrinks <em>every</em> line in the cost tables by about 10×, whichever engine you choose.</p>
+
+    <h3>When the serving store needs to do more than lookups</h3>
+    <p>If customers need free-form slicing (any dimension, any date range) rather than fixed dashboards, consider a real-time OLAP engine built for user-facing analytics, such as <strong>ClickHouse</strong>, <strong>Apache Pinot</strong> or <strong>Apache Druid</strong>. They're designed for thousands of concurrent sub-second queries, and you size them by node rather than paying per query. Use a key-value store (e.g. DynamoDB) when access is purely by tenant and date.</p>
+  </section>
+
+  <!-- 8 -->
+  <section id="tco">
+    <h2><span class="num">08</span>Total cost of the product, not the architecture</h2>
+    <p>The pipeline comparison answered "which architecture is cheapest to build?" The question that decides whether the feature is profitable is different: <strong>"what does it cost to deliver this feature to every customer, every month, including the people who run it?"</strong></p>
+    <div class="tmpl" style="font:14px/1.8 var(--mono);background:var(--ink);color:#f3efe6;border-radius:14px;padding:20px 22px;margin:20px 0;white-space:pre-wrap"><span style="color:var(--gold)">Total cost of product</span> =
+    ingest + ETL + storage                 <span style="color:#9aa3b2">← the "architecture" (section 06)</span>
+  + serving compute + database + cache      <span style="color:#9aa3b2">← scales with customers × usage</span>
+  + API + data egress + CDN
+  + logs, monitoring, security tooling
+  + engineering, on-call and support time  <span style="color:#9aa3b2">← often the largest line</span></div>
+
+
+    <h3>Putting it together: pipeline + application = total cost</h3>
+    <p>This table combines everything: the pipeline from section 06, the application serving from section 07, and the delivery costs every option shares. Same workload throughout: 1 TB of data, 40,000 customers, about 2.2 billion app queries a month.</p>
+    <div class="tbl xl"><table>
+      <thead><tr><th style="min-width:200px">End-to-end architecture</th><th class="num">Pipeline<br><small>ETL + storage</small></th><th class="num">App serving<br><small>engine / DB + cache</small></th><th class="num">Delivery<br><small>API, egress, logs</small></th><th class="num">Total / month</th><th class="num">Per customer</th><th class="num">Per year</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Lakehouse jobs + serving DB + cache</strong><br><small>Databricks/EMR precompute → Postgres → Valkey</small></td><td class="num">$425</td><td class="num">$1,300</td><td class="num">$1,800</td><td class="num"><strong>≈ $3.5k</strong></td><td class="num">≈ $0.09</td><td class="num">≈ $42k</td></tr>
+        <tr class="best"><td><strong>Provisioned Redshift + cache</strong><br><small>ETL → Redshift ← app server (reserved nodes in brackets)</small></td><td class="num">$75</td><td class="num">$2,000<br><small>($1,100)</small></td><td class="num">$1,800</td><td class="num"><strong>≈ $3.9k</strong><br><small>(≈ $3k)</small></td><td class="num">≈ $0.10<br><small>(≈ $0.07)</small></td><td class="num">≈ $47k<br><small>(≈ $36k)</small></td></tr>
+        <tr><td><strong>Redshift Serverless end-to-end</strong></td><td class="num">$75</td><td class="num">$35,000</td><td class="num">$1,800</td><td class="num">≈ $37k</td><td class="num">≈ $0.90</td><td class="num">≈ $440k</td></tr>
+        <tr><td><strong>Athena end-to-end</strong></td><td class="num">$50</td><td class="num">$110,000</td><td class="num">$1,800</td><td class="num">≈ $110k</td><td class="num">≈ $2.80</td><td class="num">≈ $1.3M</td></tr>
+        <tr><td><strong>Databricks end-to-end</strong><br><small>jobs + serverless SQL for the app</small></td><td class="num">$80</td><td class="num">$100k – $500k</td><td class="num">$1,800</td><td class="num">≈ $100k – $500k</td><td class="num">$2.50 – $12.50</td><td class="num">$1.2M – $6M</td></tr>
+      </tbody>
+    </table></div>
+
+    <div class="chart">
+      <h4>Where each dollar goes (fixed-capacity options)</h4>
+      <p class="cap">Share of the total monthly cost. The pipeline is the smallest slice; serving and delivery decide the bill.</p>
+      <div style="display:grid;grid-template-columns:230px 1fr;gap:14px;align-items:center;margin:12px 0;font-size:14px">
+        <span>Lakehouse + serving DB (≈ $3.5k)</span>
+        <div style="display:flex;height:26px;border-radius:6px;overflow:hidden;font:500 11px var(--mono);color:#fff">
+          <div style="width:12%;background:var(--accent);display:flex;align-items:center;justify-content:center">12%</div>
+          <div style="width:37%;background:var(--teal);display:flex;align-items:center;justify-content:center">serving 37%</div>
+          <div style="width:51%;background:#4a5568;display:flex;align-items:center;justify-content:center">delivery 51%</div>
+        </div>
+        <span>Provisioned Redshift (≈ $3.9k)</span>
+        <div style="display:flex;height:26px;border-radius:6px;overflow:hidden;font:500 11px var(--mono);color:#fff">
+          <div style="width:2%;background:var(--accent)"></div>
+          <div style="width:52%;background:var(--teal);display:flex;align-items:center;justify-content:center">serving 52%</div>
+          <div style="width:46%;background:#4a5568;display:flex;align-items:center;justify-content:center">delivery 46%</div>
+        </div>
+      </div>
+      <p class="cap" style="margin:10px 0 0"><span style="color:var(--accent)">■</span> pipeline (ETL + storage) &nbsp; <span style="color:var(--teal)">■</span> app serving &nbsp; <span style="color:#4a5568">■</span> delivery (API, egress, logs)</p>
+    </div>
+
+    <div class="callout"><p><strong>How to read this.</strong> The pipeline is 2–12% of the total with fixed-capacity serving, and under 0.1% with pay-per-use serving. If you choose your stack by comparing ETL costs alone, you're optimising the smallest line on the bill. Notice too that <em>delivery</em> (API, data egress, logs) is now as big as serving. Response compression, HTTP caching and log sampling are real cost levers, not afterthoughts.</p></div>
+
+    <h3>Track unit economics, not just the monthly bill</h3>
+    <div class="tbl"><table>
+      <thead><tr><th>Metric</th><th>Why it matters</th><th>In this example</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Cost per customer per month</strong></td><td>Compare it with what the customer pays. This is the gross-margin question.</td><td>≈ $0.07–$0.10 (provisioned Redshift or serving layer) vs. $2.50–$12.50 (pay-per-use SQL)</td></tr>
+        <tr><td><strong>Cost per 1,000 queries</strong></td><td>Shows whether usage growth is healthy or a liability</td><td>≈ $0.002 vs. $0.05–$0.25</td></tr>
+        <tr><td><strong>Cost as % of feature revenue</strong></td><td>Many SaaS businesses aim for 70–80% gross margin, so infrastructure has to stay a small slice of price</td><td>Set a ceiling before launch and alert when it's breached</td></tr>
+        <tr><td><strong>Marginal cost of the next 10,000 customers</strong></td><td>Shows whether costs grow linearly, in steps or explosively</td><td>Fixed capacity (provisioned Redshift, serving DB): in steps, adding a node when you need one. Pay-per-use: linear and steep.</td></tr>
+      </tbody>
+    </table></div>
+    <div class="callout teal"><p><strong>Where Databricks still fits.</strong> None of this rules Databricks out. It's an excellent engine for the <em>analytics plane</em>: the hourly precompute jobs, data quality checks, ML forecasting and internal analysts. The expensive mistake is using its serverless SQL as the per-request backend for tens of thousands of customers. Use the right plane for each job. The same logic is why <strong>provisioned</strong> Redshift works well for app traffic while <strong>Serverless</strong> Redshift can get expensive: the engine is the same, but one has a fixed price and the other a meter.</p></div>
+    <p style="font-size:14px;color:var(--muted)">Serving estimates assume 40,000 customers × 150 queries/hour on average over 12 active hours a day, US East on-demand list prices (November 2026), the stated per-cluster throughput, and a cache in front of every fixed-capacity option. Real throughput depends on query shape and caching, so benchmark your own workload before committing.</p>
+  </section>
+
+  <!-- 9 -->
+  <section id="lesson">
+    <h2><span class="num">09</span>Where the money actually went in our pilot</h2>
+    <p>Our first working pilot used the "we already have Kubernetes" path: containerised jobs on a managed Kubernetes cluster, batching bookings into S3 and loading them into a small provisioned warehouse. It worked. Then we read the bill.</p>
+    <div class="stats">
+      <div class="stat"><div class="v" style="color:var(--red)">~57%</div><div class="l">Kubernetes control plane</div></div>
+      <div class="stat"><div class="v" style="color:var(--red)">~38%</div><div class="l">always-on worker nodes</div></div>
+      <div class="stat"><div class="v">~4%</div><div class="l">block storage, networking, misc.</div></div>
+      <div class="stat"><div class="v" style="color:var(--teal)">&lt;2%</div><div class="l">S3 storage (the actual data)</div></div>
+    </div>
+    <p>On top of that, a provisioned warehouse node billed for every hour it was up, while holding <strong>under half a gigabyte</strong> of data. Two lessons stuck:</p>
+    <ol>
+      <li><strong>At small scale, you pay for existence, not usage.</strong> Pick components that cost nothing at zero load.</li>
+      <li><strong>Micro-batching created a small-files problem.</strong> Writing a file every few hundred bookings meant thousands of tiny objects, which slowed queries and inflated request costs. Batch larger, or compact regularly.</li>
+    </ol>
+  </section>
+
+  <!-- 8 -->
+  <section id="fast">
+    <h2><span class="num">10</span>Making it fast (and cheaper at the same time)</h2>
+    <p>On a data lake, speed and cost come from the same place: <em>read less data</em>.</p>
+    <div class="grid2">
+      <div class="tip"><h4>Convert to Parquet early</h4><p>Columnar plus compressed means 8–13× smaller in our tests, and queries read only the columns they need.</p></div>
+      <div class="tip"><h4>Partition on how you filter</h4><p>Usually by date (booking or arrival), plus a coarse key like region. Avoid high-cardinality partitions.</p></div>
+      <div class="tip"><h4>Right-size files</h4><p>Aim for 128–512 MB files. Run compaction (Iceberg <code>rewrite_data_files</code>, Delta <code>OPTIMIZE</code>) on a schedule.</p></div>
+      <div class="tip"><h4>Pre-aggregate gold tables</h4><p>Daily ADR, RevPAR, pickup and funnel tables mean dashboards scan kilobytes and respond in under a second.</p></div>
+      <div class="tip"><h4>Pick the engine for the size</h4><p>Under about 100 GB, a single DuckDB or Polars node often beats a Spark cluster, both on wall-clock time and on cost.</p></div>
+      <div class="tip"><h4>Cache BI results</h4><p>Use extract or cached modes in the BI tool so a hundred viewers don't trigger a hundred scans.</p></div>
+    </div>
+  </section>
+
+  <!-- 9 -->
+  <section id="change">
+    <h2><span class="num">11</span>Solving schema drift, deltas and privacy</h2>
+    <h3>Schema flexibility</h3>
+    <p>Land raw data unchanged in bronze. Enforce a schema in silver using a table format that supports <strong>schema evolution</strong>: adding columns, widening types and renaming without rewriting files. Iceberg and Delta both do this, so a new field from a source system becomes a nullable column instead of a broken pipeline.</p>
+    <h3>Delta management</h3>
+    <p>Bookings change state: confirmed, modified, cancelled, voided, refunded. Use the source's change timestamp or change data capture to pull only changed records, then <code>MERGE</code> them into silver by booking key. Time travel gives you an audit trail of how a booking looked on any date, which is great for pickup and pace analysis.</p>
+    <h3>Guest data is personal data</h3>
+    <div class="callout red">
+      <p>Booking records contain names, emails, phone numbers and addresses. <strong>Hash or tokenise direct identifiers when moving from bronze to silver</strong>, keep raw access tightly restricted, apply column-level permissions, and never use real guest rows in samples, documents or test fixtures. Analytics almost never needs the actual email address, just a stable key to join on.</p>
+    </div>
+  </section>
+
+  <!-- 10 -->
+  <section id="decide">
+    <h2><span class="num">12</span>How to choose</h2>
+    <div class="decide">
+      <div><span>Data under about 1 TB, a small team, bursty queries, and you want minimal ops</span><b>→ S3 + Iceberg + Athena</b></div>
+      <div><span>Strong in-house engineers, cost is king, and data fits on one machine</span><b>→ S3 + DuckDB / Spark on EC2</b></div>
+      <div><span>Heavy multi-terabyte transformations, mostly batch</span><b>→ EMR (Serverless) or Databricks jobs</b></div>
+      <div><span>Many business users, complex joins, steady all-day BI load</span><b>→ Redshift (reserved or Serverless)</b></div>
+      <div><span>ETL, ML, notebooks and governance on one platform, with many teams</span><b>→ Databricks</b></div>
+      <div><span>Streaming or always-on services already on Kubernetes</span><b>→ EKS, sharing an existing cluster</b></div>
+      <div><span>Customer-facing dashboards needing SQL flexibility and a predictable bill</span><b>→ provisioned Redshift (reserved) + cache</b></div>
+      <div><span>Customer-facing point lookups at very high concurrency and the lowest latency</span><b>→ precomputed serving store + cache</b></div>
+    </div>
+    <p>Our phased plan followed this logic. <strong>Phases 1–3</strong> (foundation): collect, structure and architect on S3 + Iceberg with a serverless query layer. <strong>Phases 4–5</strong>: insights and business value through dashboards and forecasting models. <strong>Phase 6</strong>: long-term optimisation, adopting a heavier platform only where measured workload justifies it.</p>
+  </section>
+
+
+  <section id="pricing">
+    <h2><span class="num">13</span>Pricing reference (validated November 2026)</h2>
+    <p>Every estimate in this article uses these on-demand list prices for US East (N. Virginia). They were checked against current AWS and Databricks pricing in November 2026. Results are rounded for readability.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Service</th><th>Unit price used</th><th>Pricing notes</th></tr></thead>
+      <tbody>
+        <tr><td><strong>S3 Standard</strong></td><td>$0.023 / GB-month (first 50 TB)</td><td>Plus request fees: PUTs cost more than GETs, which is why small files hurt</td></tr>
+        <tr><td><strong>EC2</strong></td><td>m5.xlarge $0.192/h · m5.2xlarge $0.384/h</td><td>Billed per second; Spot is often 60–70% cheaper for batch ETL</td></tr>
+        <tr><td><strong>EMR on EC2</strong></td><td>EC2 price + EMR fee (e.g. +$0.048/h on m5.xlarge)</td><td>EMR fee is added on top of the instance price</td></tr>
+        <tr><td><strong>Athena</strong></td><td>$5 / TB scanned</td><td>10 MB minimum per query, which dominates at high query counts</td></tr>
+        <tr><td><strong>Redshift provisioned</strong></td><td>ra3.large $0.543/h · ra3.xlplus $1.086/h</td><td>No per-query charge; DC2 deprecated; reserved nodes up to about 55% off (3-year)</td></tr>
+        <tr><td><strong>Redshift managed storage</strong></td><td>$0.024 / GB-month</td><td>Billed separately from RA3 compute</td></tr>
+        <tr><td><strong>Redshift concurrency scaling</strong></td><td>~1 free hour per cluster per day</td><td>Then billed per second at the cluster's on-demand rate</td></tr>
+        <tr><td><strong>Redshift Serverless</strong></td><td>$0.375 / RPU-hour (4 RPU minimum ≈ $1.50/h)</td><td>Per-second billing while active; includes Spectrum and concurrency scaling</td></tr>
+        <tr><td><strong>Databricks (AWS, Premium)</strong></td><td>Jobs ~$0.15/DBU + EC2 · Serverless SQL ~$0.70/DBU</td><td>Standard tier retired on AWS; serverless SQL includes compute; 2X-Small = 4 DBU/h, Small = 12 DBU/h</td></tr>
+        <tr><td><strong>EKS</strong></td><td>$0.10 / cluster-hour (≈ $75/month)</td><td>$0.60/h once a Kubernetes version enters extended support</td></tr>
+        <tr><td><strong>Aurora PostgreSQL</strong></td><td>db.r7g.xlarge ≈ $404 / month</td><td>Plus storage and I/O</td></tr>
+        <tr><td><strong>ElastiCache for Valkey</strong></td><td>cache.r7g.xlarge ≈ $0.28/h</td><td>Valkey is about 20% cheaper than Redis OSS nodes</td></tr>
+        <tr><td><strong>Fargate</strong></td><td>$0.0405 / vCPU-hour + $0.0044 / GB-hour</td><td>Linux/x86; ARM (Graviton) is cheaper</td></tr>
+        <tr><td><strong>Data transfer out</strong></td><td>$0.09 / GB (first 10 TB, after 100 GB free)</td><td>CloudFront ~$0.085/GB with 1 TB/month free; NAT gateway charges are separate</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section>
+    <h2>Closing thought</h2>
+    <p>"Big data" is a property of your workload, not your ambition. Measure your rows, multiply by bytes, convert to Parquet, and you'll often find that the right first architecture is the boring one: open formats on object storage, plus compute that only exists while it's working. Start there, prove the value, and let real usage — not vendor slides — tell you when to scale up. And price the <em>whole product</em>, not just the pipeline. The day your data reaches thousands of customers, the serving layer decides whether the feature is profitable.</p>
+  </section>
+
+</div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>A note on pricing:</strong> figures are approximate on-demand list prices for the US East region as of November 2026, rounded for readability, and exclude taxes, support plans, networking and engineering time. Cloud and Databricks prices change and vary by region, tier and commitment, so validate with the AWS Pricing Calculator and the Databricks pricing calculator before budgeting. The scenario has been generalised and contains no customer data.</p>
+    <p><a href="../">← Back to jigneshrana.github.io</a> · © 2026 Jignesh Rana</p>
+  </div>
+</footer>
+
+</body>
+</html>
