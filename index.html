@@ -114,16 +114,6 @@ section{padding:clamp(64px,8vw,112px) 0;border-top:1px solid var(--line)}
 .replay{font:inherit;font-size:14px;font-weight:600;background:none;border:1.5px solid var(--ink);border-radius:999px;padding:9px 16px;cursor:pointer}
 .replay:hover{background:var(--ink);color:var(--paper)}
 
-/* Career */
-.timeline{list-style:none;margin:0;padding:0;border-top:2px solid var(--ink)}
-.timeline li{display:grid;grid-template-columns:170px minmax(0,4fr) minmax(0,6fr);gap:clamp(16px,3vw,40px);padding:28px 0;border-bottom:1px solid var(--line)}
-.years{font-family:var(--display);font-weight:600;font-variant-numeric:tabular-nums;color:var(--blue)}
-.timeline h3{font-size:22px;font-weight:700}
-.timeline .org{color:var(--slate);font-size:16px;margin-top:4px}
-.timeline p{color:var(--slate);font-size:16.5px}
-.timeline li.now .years::after{content:"";display:inline-block;width:8px;height:8px;margin-left:10px;border-radius:50%;background:var(--blue);animation:pulse 2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(36,87,245,.6)}100%{box-shadow:0 0 0 10px rgba(36,87,245,0)}}
-
 /* Toolkit */
 .split{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,4vw,56px)}
 .split h3{font-size:22px;font-weight:700;margin-bottom:18px}
@@ -199,7 +189,6 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   .lens.ai{grid-column:1/-1}
   .links{grid-template-columns:repeat(2,minmax(0,1fr))}
   .links a:nth-child(3){padding-left:0;border-left:0}
-  .timeline li{grid-template-columns:minmax(0,1fr);gap:6px}
   .certs{grid-template-columns:repeat(2,minmax(0,1fr))}
   .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
   .posts{grid-template-columns:minmax(0,1fr)}
@@ -216,7 +205,6 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
 @media (prefers-reduced-motion:reduce){
   html{scroll-behavior:auto}
   .fill{transition:none}
-  .timeline li.now .years::after{animation:none}
   .cert button,.cert button:hover,.post a,.post a:hover{transition:none;transform:none}
 }
 </style>
@@ -230,7 +218,6 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
       <li><a href="#story">Story</a></li>
       <li><a href="#work">AI work</a></li>
       <li><a href="#impact">Impact</a></li>
-      <li><a href="#career">Career</a></li>
       <li><a href="#writing">Writing</a></li>
       <li><a href="#certificates">Certificates</a></li>
       <li><a href="#contact">Contact</a></li>
@@ -330,57 +317,6 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
       <li><b>0 → 40K+</b><h3>Customers</h3><p>Founding core engineer of the eZee Absolute cloud PMS, then owner of its infrastructure, performance, security and stability through hyper-growth.</p></li>
       <li><b>PCI DSS</b><h3>Enterprise-grade security</h3><p>Led PCI DSS certification; architecture ready for SOC 2, ISO 27001, GDPR and DPDP for enterprise hotel customers.</p></li>
     </ul>
-  </div>
-</section>
-
-<section id="career">
-  <div class="wrap">
-    <div class="head">
-      <h2>Career</h2>
-      <p>Most of my career has been at eZee Technosys (now Yanolja Cloud Solution), with time in between leading teams and owning products in hotel distribution.</p>
-    </div>
-    <ol class="timeline" reversed>
-      <li class="now">
-        <span class="years">2026 – now</span>
-        <div><h3>Technical Product Manager</h3><div class="org">Yanolja Cloud Solution, Surat</div></div>
-        <p>Lead technical product and engineering delivery end to end, from discovery and customer interviews to architecture, reviews and release. Built PlanGen, drive AI-first engineering, and still code in Python, Node.js and React.</p>
-      </li>
-      <li>
-        <span class="years">2024 – 2026</span>
-        <div><h3>Head of Cloud Infrastructure &amp; Security</h3><div class="org">Yanolja Cloud Solution, Surat</div></div>
-        <p>Owned cloud infrastructure, reliability and security strategy for 40,000+ customers. Set engineering quality and code standards, drove AI adoption, and led the PCI DSS, GDPR, DPDP, ISO 27001 and SOC 2 posture.</p>
-      </li>
-      <li>
-        <span class="years">2020 – 2023</span>
-        <div><h3>Cloud Infrastructure Team Leader</h3><div class="org">eZee Technosys, Surat</div></div>
-        <p>Reached 99.99% uptime through high availability and disaster recovery, led PCI DSS certification, and automated database reviews adopted across teams.</p>
-      </li>
-      <li>
-        <span class="years">2015 – 2019</span>
-        <div><h3>Cloud Infrastructure &amp; DevOps Engineer → Senior DevOps Engineer</h3><div class="org">eZee Technosys, Surat</div></div>
-        <p>Migrated large production workloads to AWS Aurora with zero downtime, introduced CloudFormation, CI/CD and automation, and cut request latency from minutes to seconds.</p>
-      </li>
-      <li>
-        <span class="years">2016</span>
-        <div><h3>Senior Technical Team Lead</h3><div class="org">Maven Agency, Surat</div></div>
-        <p>Led client project teams, designed core system architecture and mentored developers, delivering to deadline.</p>
-      </li>
-      <li>
-        <span class="years">2012 – 2015</span>
-        <div><h3>Product Manager</h3><div class="org">STAAH Hotel Software, Surat</div></div>
-        <p>Owned the channel manager and booking engine connecting hotels to global OTAs, from scoping to release; tuned MySQL, hired the team and handled security incidents.</p>
-      </li>
-      <li>
-        <span class="years">2009 – 2012</span>
-        <div><h3>Senior PHP Developer</h3><div class="org">eZee Technosys, Surat</div></div>
-        <p>Founding core engineer in the five-person team that built the cloud hotel PMS eZee Absolute from zero customers.</p>
-      </li>
-      <li>
-        <span class="years">2009</span>
-        <div><h3>PHP Programmer</h3><div class="org">Krtya Softwares, Surat</div></div>
-        <p>Built and customised web applications on Joomla, WordPress and osCommerce.</p>
-      </li>
-    </ol>
   </div>
 </section>
 
