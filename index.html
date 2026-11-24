@@ -72,12 +72,17 @@ section{padding:clamp(64px,8vw,112px) 0;border-top:1px solid var(--line)}
 .head p{color:var(--slate);max-width:60ch}
 
 /* Scale story */
-.lenses{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:2px solid var(--ink)}
-.lens{padding:28px 28px 8px 0}
-.lens + .lens{padding-left:28px;border-left:1px solid var(--line)}
+.lenses{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:0;border-top:2px solid var(--ink)}
+.lens{padding:28px 24px 8px 0;display:grid;grid-row:span 3;grid-template-rows:subgrid;row-gap:0;align-content:start}
+.lens + .lens{padding-left:24px;border-left:1px solid var(--line)}
 .lens h3{font-size:24px;font-weight:700;display:flex;align-items:center;gap:10px}
 .lens h3::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--blue)}
-.lens p{margin-top:12px;color:var(--slate);font-size:16.5px}
+.lens p{margin-top:12px;color:var(--slate);font-size:16px}
+.lens.ai h3::before{background:linear-gradient(135deg,var(--blue),#1f6f6b);box-shadow:0 0 10px rgba(36,87,245,.6)}
+.kpi{padding-top:20px}
+.kpi span{display:block;font-size:11.5px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--slate);border-top:1px dashed var(--line);padding-top:14px}
+.kpi b{display:block;margin-top:8px;font-family:var(--display);font-weight:800;font-size:clamp(24px,2.2vw,30px);letter-spacing:-0.02em;line-height:1.05;color:var(--blue)}
+.kpi small{display:block;margin-top:6px;font-size:14px;color:var(--slate);line-height:1.45}
 
 /* AI work */
 .work{background:linear-gradient(180deg,var(--bg),#f3ecdf 60%,var(--bg))}
@@ -188,7 +193,10 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   .hero .wrap,.head,.work-grid,.split{grid-template-columns:minmax(0,1fr)}
   .field{max-width:460px}
   .lenses{grid-template-columns:repeat(2,minmax(0,1fr))}
-  .lens:nth-child(3){padding-left:0;border-left:0}
+  .lens{padding-bottom:24px}
+  .lens:nth-child(odd){padding-left:0;border-left:0}
+  .lens:nth-child(n+3){border-top:1px solid var(--line)}
+  .lens.ai{grid-column:1/-1}
   .links{grid-template-columns:repeat(2,minmax(0,1fr))}
   .links a:nth-child(3){padding-left:0;border-left:0}
   .timeline li{grid-template-columns:minmax(0,1fr);gap:6px}
@@ -199,7 +207,7 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
 @media (max-width:560px){
   .nav ul{display:none}
   .lenses,.links{grid-template-columns:minmax(0,1fr)}
-  .lens,.lens + .lens{padding-left:0;border-left:0;border-bottom:1px solid var(--line);padding-bottom:20px}
+  .lens,.lens + .lens{padding-left:0;border-left:0;border-top:0;border-bottom:1px solid var(--line);padding-bottom:20px}
   .links a,.links a + a{padding-left:0;border-left:0}
   .bar-row{grid-template-columns:56px minmax(0,1fr) 78px;gap:10px}
   .certs{grid-template-columns:minmax(0,1fr)}
@@ -251,13 +259,19 @@ footer{padding:28px 0 40px;color:var(--slate);font-size:14px}
   <div class="wrap">
     <div class="head">
       <h2>One product, from day zero to 40,000 customers</h2>
-      <p>I helped write eZee's cloud hotel PMS before it had a single customer, then came back at the end of 2015 to run it through its growth years. Every stage of scale brought new problems in four places, and I have owned all four.</p>
+      <p>I helped write eZee's cloud hotel PMS before it had a single customer, then came back at the end of 2015 to run it through its growth years. Every stage of scale brought new problems in five places, and I have owned all five. Each one has a number I am measured on.</p>
     </div>
     <div class="lenses">
-      <div class="lens"><h3>Product</h3><p>From discovery to production. I map features to what hotels need, review design and code, and stay close to customers and support.</p></div>
-      <div class="lens"><h3>Performance</h3><p>MySQL tuning, a move to Aurora MySQL and auto-scaling EC2 to keep the product fast as load and data kept climbing.</p></div>
-      <div class="lens"><h3>Security</h3><p>PCI DSS audit and certification, regular security reviews, in-house scanning tools and hands-on incident response.</p></div>
-      <div class="lens"><h3>Stability</h3><p>High-availability design, centralised logs, sessions and cron, and an AWS Well-Architected (FTR) review of the platform.</p></div>
+      <div class="lens"><h3>Product</h3><p>From discovery to production. I map features to what hotels need, review design and code, and stay close to customers and support.</p>
+        <div class="kpi"><span>Key metric</span><b>0 → 40K+</b><small>customers, with bi-weekly releases of ~50 tickets</small></div></div>
+      <div class="lens"><h3>Performance</h3><p>MySQL tuning, a move to Aurora MySQL and auto-scaling EC2 to keep the product fast as load and data kept climbing.</p>
+        <div class="kpi"><span>Key metric</span><b>~30x faster</b><small>queries: 4–5 min → under 10 s; request latency minutes → seconds</small></div></div>
+      <div class="lens"><h3>Security</h3><p>PCI DSS audit and certification, regular security reviews, in-house scanning tools and hands-on incident response.</p>
+        <div class="kpi"><span>Key metric</span><b>PCI DSS</b><small>certified; ready for SOC 2, ISO 27001, GDPR and DPDP</small></div></div>
+      <div class="lens"><h3>Stability</h3><p>High-availability design, centralised logs, sessions and cron, and an AWS Well-Architected (FTR) review of the platform.</p>
+        <div class="kpi"><span>Key metric</span><b>99.99%</b><small>uptime; zero-downtime migration to AWS Aurora</small></div></div>
+      <div class="lens ai"><h3>AI-first</h3><p>AI-assisted triage, scoping and coding across the team, plus PlanGen: an agentic pipeline from customer requirements to reviewed scope to code agent.</p>
+        <div class="kpi"><span>Key metric</span><b>2x delivery</b><small>features doubled, enhancements tripled; half the team carries the full load</small></div></div>
     </div>
   </div>
 </section>
