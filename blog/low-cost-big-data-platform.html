@@ -150,7 +150,7 @@
     <div class="kicker">Data Engineering · Architecture · FinOps</div>
     <h1>Big Data on a Small Budget: Building a Low-Cost, Fast Analytics Platform</h1>
     <p class="dek">How we planned to unify booking, search and operations data from five products into one platform. Building the pipeline turned out to cost tens of dollars a month. Serving it to 40,000 customers was the real cost problem.</p>
-    <div class="meta"><span>By Jignesh Rana</span><span>November 2026</span><span>18 min read</span></div>
+    <div class="meta"><span>By Jignesh Rana</span><span>March 2026</span><span>18 min read</span></div>
   </div>
 </header>
 
@@ -421,7 +421,7 @@
     <h2><span class="num">06</span>Cost comparison: building the pipeline</h2>
     <p>This section compares the cost of <em>building and refreshing</em> the data: landing it, transforming it, storing it, and letting a small group of analysts query it. Hold that thought, because <a href="#serving">section 07</a> shows why this is only half the bill.</p>
     <div class="callout teal">
-      <p><strong>Assumptions for an apples-to-apples comparison:</strong> 1 TB of curated data in S3 · daily batch ETL of about 2 hours (60 h/month) · about 40 hours a month of active interactive/BI querying · about 2 TB scanned per month · US East on-demand list prices, November 2026 · no reserved or spot discounts · excludes engineer time, networking and BI licences · all figures rounded. *Storage includes S3 plus Redshift managed storage or EBS where used.</p>
+      <p><strong>Assumptions for an apples-to-apples comparison:</strong> 1 TB of curated data in S3 · daily batch ETL of about 2 hours (60 h/month) · about 40 hours a month of active interactive/BI querying · about 2 TB scanned per month · US East on-demand list prices, March 2026 · no reserved or spot discounts · excludes engineer time, networking and BI licences · all figures rounded. *Storage includes S3 plus Redshift managed storage or EBS where used.</p>
     </div>
 
     <div class="tbl"><table>
@@ -648,7 +648,7 @@
       </tbody>
     </table></div>
     <div class="callout teal"><p><strong>Where Databricks still fits.</strong> None of this rules Databricks out. It's an excellent engine for the <em>analytics plane</em>: the hourly precompute jobs, data quality checks, ML forecasting and internal analysts. The expensive mistake is using its serverless SQL as the per-request backend for tens of thousands of customers. Use the right plane for each job. The same logic is why <strong>provisioned</strong> Redshift works well for app traffic while <strong>Serverless</strong> Redshift can get expensive: the engine is the same, but one has a fixed price and the other a meter.</p></div>
-    <p style="font-size:14px;color:var(--muted)">Serving estimates assume 40,000 customers × 150 queries/hour on average over 12 active hours a day, US East on-demand list prices (November 2026), the stated per-cluster throughput, and a cache in front of every fixed-capacity option. Real throughput depends on query shape and caching, so benchmark your own workload before committing.</p>
+    <p style="font-size:14px;color:var(--muted)">Serving estimates assume 40,000 customers × 150 queries/hour on average over 12 active hours a day, US East on-demand list prices (March 2026), the stated per-cluster throughput, and a cache in front of every fixed-capacity option. Real throughput depends on query shape and caching, so benchmark your own workload before committing.</p>
   </section>
 
   <!-- 9 -->
@@ -713,8 +713,8 @@
 
 
   <section id="pricing">
-    <h2><span class="num">13</span>Pricing reference (validated November 2026)</h2>
-    <p>Every estimate in this article uses these on-demand list prices for US East (N. Virginia). They were checked against current AWS and Databricks pricing in November 2026. Results are rounded for readability.</p>
+    <h2><span class="num">13</span>Pricing reference (validated March 2026)</h2>
+    <p>Every estimate in this article uses these on-demand list prices for US East (N. Virginia). They were checked against current AWS and Databricks pricing in March 2026. Results are rounded for readability.</p>
     <div class="tbl"><table>
       <thead><tr><th>Service</th><th>Unit price used</th><th>Pricing notes</th></tr></thead>
       <tbody>
@@ -746,7 +746,7 @@
 
 <footer>
   <div class="wrap">
-    <p><strong>A note on pricing:</strong> figures are approximate on-demand list prices for the US East region as of November 2026, rounded for readability, and exclude taxes, support plans, networking and engineering time. Cloud and Databricks prices change and vary by region, tier and commitment, so validate with the AWS Pricing Calculator and the Databricks pricing calculator before budgeting. The scenario has been generalised and contains no customer data.</p>
+    <p><strong>A note on pricing:</strong> figures are approximate on-demand list prices for the US East region as of March 2026, rounded for readability, and exclude taxes, support plans, networking and engineering time. Cloud and Databricks prices change and vary by region, tier and commitment, so validate with the AWS Pricing Calculator and the Databricks pricing calculator before budgeting. The scenario has been generalised and contains no customer data.</p>
     <p><a href="../">← Back to jigneshrana.github.io</a> · © 2026 Jignesh Rana</p>
   </div>
 </footer>
