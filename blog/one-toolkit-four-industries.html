@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One Toolkit, Four Worlds: How the Same ML Ideas Read Differently Across Industries</title>
+<meta name="description" content="Standard deviation, outliers, target variables and time series mean different things in SaaS, the Indian stock market, product marketing and security. A field guide to translating one data science toolkit across business, product, engineering, security, marketing and customer acquisition.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#faf6ee; --paper:#fffdf8; --ink:#1d2433; --muted:#5b6474; --line:#e7dfcf;
+    --accent:#2b55b8; --accent-soft:#e2e9f8;
+    --saas:#2b55b8; --saas-soft:#e2e9f8;
+    --mkt:#b35c00;  --mkt-soft:#f6e6d3;
+    --sec:#a8322d;  --sec-soft:#f7e1df;
+    --stk:#1f6f6b;  --stk-soft:#dcefeb;
+    --gold:#c99a2e;
+    --serif:'Fraunces',Georgia,serif; --sans:'Inter',system-ui,-apple-system,sans-serif; --mono:'JetBrains Mono',ui-monospace,monospace;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.7 var(--sans);-webkit-font-smoothing:antialiased}
+  a{color:var(--accent)}
+  .wrap{max-width:780px;margin:0 auto;padding:0 24px}
+
+  header.hero{padding:88px 0 56px;border-bottom:1px solid var(--line);background:
+    radial-gradient(circle at 88% 18%, var(--saas-soft) 0, transparent 38%),
+    radial-gradient(circle at 70% 85%, var(--mkt-soft) 0, transparent 30%),
+    radial-gradient(circle at 8% 90%, var(--stk-soft) 0, transparent 32%),
+    radial-gradient(circle at 4% 10%, var(--sec-soft) 0, transparent 26%)}
+  .kicker{font:600 12px/1 var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--accent)}
+  h1{font:700 clamp(36px,5.4vw,58px)/1.08 var(--serif);letter-spacing:-.02em;margin:18px 0 20px}
+  .dek{font-size:20px;color:var(--muted);max-width:660px;margin:0}
+  .meta{margin-top:28px;font-size:14px;color:var(--muted);display:flex;gap:18px;flex-wrap:wrap}
+  .meta span::before{content:"•";margin-right:18px;color:var(--line)}
+  .meta span:first-child::before{content:none}
+
+  nav.toc{margin:40px 0 0;padding:20px 24px;background:var(--paper);border:1px solid var(--line);border-radius:14px}
+  nav.toc strong{font:600 12px var(--sans);letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+  nav.toc ol{margin:10px 0 0;padding-left:20px;columns:2;column-gap:32px;font-size:15px}
+  nav.toc a{color:var(--ink);text-decoration:none}
+  nav.toc a:hover{color:var(--accent)}
+
+  main section{padding:56px 0 8px}
+  h2{font:700 clamp(28px,3.6vw,36px)/1.15 var(--serif);letter-spacing:-.015em;margin:0 0 18px}
+  h2 .num{color:var(--accent);font-size:.7em;vertical-align:.25em;margin-right:10px;font-family:var(--mono);font-weight:500}
+  h3{font:600 20px/1.3 var(--sans);margin:32px 0 10px}
+  p{margin:0 0 18px}
+  ul,ol{padding-left:22px;margin:0 0 18px}
+  li{margin:4px 0}
+  code{font:14px var(--mono);background:var(--accent-soft);padding:2px 6px;border-radius:5px}
+
+  .tldr{background:var(--ink);color:#f3efe6;border-radius:16px;padding:28px 32px;margin:48px 0 0}
+  .tldr h4{margin:0 0 10px;font:600 12px var(--sans);letter-spacing:.16em;text-transform:uppercase;color:var(--gold)}
+  .tldr ul{margin:0;padding-left:20px}
+  .tldr li{margin:8px 0}
+  .tldr b{color:#fff}
+
+  .callout{border-left:4px solid var(--accent);background:var(--paper);padding:18px 22px;border-radius:0 12px 12px 0;margin:24px 0}
+  .callout.red{border-color:var(--sec);background:var(--sec-soft)}
+  .callout.teal{border-color:var(--stk)}
+  .callout p:last-child{margin:0}
+
+  /* domain legend + pills */
+  .legend{display:flex;flex-wrap:wrap;gap:10px;margin:22px 0 6px}
+  .pill{display:inline-flex;align-items:center;gap:8px;font:600 12px var(--sans);letter-spacing:.06em;text-transform:uppercase;padding:6px 12px;border-radius:99px;background:var(--paper);border:1px solid var(--line)}
+  .pill i{width:9px;height:9px;border-radius:50%;background:var(--c)}
+
+  /* concept switcher */
+  .lens{background:var(--paper);border:1px solid var(--line);border-radius:18px;padding:22px;margin:28px 0;width:min(1000px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+  .lens .pick{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+  .lens .pick button{font:500 14px var(--sans);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:99px;padding:8px 14px;cursor:pointer}
+  .lens .pick button:hover{border-color:#cdbfa3}
+  .lens .pick button[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+  .lens .def{margin:0 0 18px;padding:0 4px;color:var(--muted);font-size:15.5px}
+  .lens .def b{color:var(--ink)}
+  .quad{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+  .q{border-radius:14px;padding:16px 16px 14px;background:var(--soft);border:1px solid transparent;font-size:14.5px;line-height:1.55}
+  .q h5{margin:0 0 8px;font:600 11.5px var(--sans);letter-spacing:.1em;text-transform:uppercase;color:var(--c)}
+  .q p{margin:0}
+  .q .ask{display:block;margin-top:10px;padding-top:10px;border-top:1px dashed rgba(0,0,0,.12);font-weight:600;color:var(--ink)}
+  .saas{--c:var(--saas);--soft:var(--saas-soft)} .stk{--c:var(--stk);--soft:var(--stk-soft)}
+  .mkt{--c:var(--mkt);--soft:var(--mkt-soft)} .sec{--c:var(--sec);--soft:var(--sec-soft)}
+
+  /* tables */
+  .tbl{overflow-x:auto;margin:24px 0;border:1px solid var(--line);border-radius:14px;background:var(--paper)}
+  .tbl.xl{width:min(1060px,calc(100vw - 32px));position:relative;left:50%;transform:translateX(-50%)}
+  table{border-collapse:collapse;width:100%;font-size:14.5px}
+  th,td{padding:12px 14px;text-align:left;border-bottom:1px solid var(--line);vertical-align:top}
+  th{font:600 11.5px var(--sans);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:#f6f0e4}
+  th.saas{color:var(--saas)} th.stk{color:var(--stk)} th.mkt{color:var(--mkt)} th.sec{color:var(--sec)}
+  td:first-child{font-weight:600;white-space:nowrap}
+  tr:last-child td{border-bottom:0}
+
+  figure{margin:32px 0}
+  figure.chart{background:var(--paper);border:1px solid var(--line);border-radius:16px;padding:20px 20px 16px}
+  figcaption{font-size:13px;color:var(--muted);margin-top:10px;text-align:center}
+  svg text{font-family:var(--sans)}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:24px 0}
+  .grid4{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:22px 0}
+  .tip{background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .tip h4{margin:0 0 6px;font:600 16px var(--sans)}
+  .tip p{margin:0;font-size:15px;color:var(--muted)}
+  .tip.c{border-top:4px solid var(--c)}
+  .tip.c h4{color:var(--c)}
+
+  /* function map */
+  .fmap{display:grid;gap:12px;margin:26px 0}
+  .fn{display:grid;grid-template-columns:150px 1fr;gap:18px;background:var(--paper);border:1px solid var(--line);border-radius:14px;padding:18px 20px}
+  .fn .who{font:700 18px/1.25 var(--serif)}
+  .fn .who small{display:block;margin-top:6px;font:500 12px var(--mono);color:var(--muted)}
+  .fn p{margin:0 0 8px;font-size:15.5px}
+  .fn .tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+  .fn .tags span{font:500 12.5px var(--mono);background:var(--bg);border:1px solid var(--line);padding:3px 9px;border-radius:7px}
+
+  .steps{counter-reset:s;list-style:none;padding:0}
+  .steps li{counter-increment:s;position:relative;padding:14px 0 14px 54px;border-bottom:1px solid var(--line);margin:0}
+  .steps li::before{content:counter(s,decimal-leading-zero);position:absolute;left:0;top:14px;font:500 15px var(--mono);color:var(--accent)}
+  .steps li b{display:block}
+
+  .refs{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:22px 0}
+  .refs a{display:block;text-decoration:none;color:var(--ink);background:var(--paper);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:12px;padding:16px 18px}
+  .refs a b{display:block;font:700 17px/1.3 var(--serif)}
+  .refs a span{font-size:13.5px;color:var(--muted)}
+  .refs a:hover b{color:var(--c)}
+
+  footer{margin-top:72px;padding:40px 0 64px;border-top:1px solid var(--line);font-size:13px;color:var(--muted)}
+
+  .sitebar{position:sticky;top:0;z-index:20;background:rgba(250,246,238,.9);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .sitebar .in{max-width:1040px;margin:0 auto;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;gap:16px;font-size:15px}
+  .sitebar a{color:var(--ink);text-decoration:none;font-weight:600}
+  .sitebar a:hover{color:var(--accent)}
+  .sitebar .all{font-weight:500;color:var(--muted)}
+
+  @media (max-width:900px){ .quad{grid-template-columns:1fr 1fr} }
+  @media (max-width:760px){
+    body{font-size:16px}
+    nav.toc ol{columns:1}
+    .grid2,.grid4,.refs{grid-template-columns:1fr}
+    .fn{grid-template-columns:1fr;gap:8px}
+  }
+  @media (max-width:520px){ .quad{grid-template-columns:1fr} .tldr{padding:24px 22px} }
+</style>
+</head>
+<body>
+<div class="sitebar"><div class="in"><a href="../">← Jignesh A. Rana</a><a class="all" href="../#writing">More writing</a></div></div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">Machine Learning · Data Science · Strategy</div>
+    <h1>One Toolkit, Four Worlds: How the Same ML Ideas Read Differently Across Industries</h1>
+    <p class="dek">A standard deviation is a budget check in SaaS, a fear gauge on the NSE, a consistency score in marketing and an attack alarm in security. Same formula, four meanings. Here is how to translate the data science toolkit into whatever business you run.</p>
+    <div class="meta"><span>By Jignesh Rana</span><span>November 2026</span><span>14 min read</span></div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="tldr">
+    <h4>TL;DR</h4>
+    <ul>
+      <li><b>The math doesn't change between industries. The question does.</b> Mean, variance, outliers, target variables and forecasting work the same everywhere. What you do with the answer is domain knowledge.</li>
+      <li><b>The same spike means four different things:</b> an upsell or a bot in SaaS, a news shock in markets, a viral campaign in marketing, an attack in security. Your outlier policy has to come from the domain, not the textbook.</li>
+      <li><b>Every function in a SaaS company already has an ML problem waiting:</b> churn for the business, adoption for product, capacity and cost for engineering, anomalies for security, attribution and lead scoring for marketing and acquisition.</li>
+      <li><b>Borrow discipline from the stock market.</b> Look-ahead bias, walk-forward validation and fat tails are lessons traders learned the expensive way. They apply to churn models and alert systems too.</li>
+    </ul>
+  </div>
+
+  <nav class="toc">
+    <strong>Contents</strong>
+    <ol>
+      <li><a href="#why">Why I wrote four glossaries</a></li>
+      <li><a href="#lens">One concept, four readings</a></li>
+      <li><a href="#rosetta">The translation table</a></li>
+      <li><a href="#spike">Same spike, opposite reactions</a></li>
+      <li><a href="#functions">ML across a SaaS company</a></li>
+      <li><a href="#markets">What traders teach everyone else</a></li>
+      <li><a href="#playbook">A starter playbook</a></li>
+      <li><a href="#glossaries">The full glossaries</a></li>
+    </ol>
+  </nav>
+
+  <section id="why">
+    <h2><span class="num">01</span>Why I wrote four glossaries</h2>
+    <p>While working through the Generative AI and Machine Learning program at IHFC, IIT Delhi, I kept a glossary of every term: mean, median, skewness, imputation, one-hot encoding, hypothesis tests, embeddings, and the plots that go with them. The first version used SaaS examples, because that is where I have spent sixteen years.</p>
+    <p>Then I rewrote it three more times: for the Indian stock market, for product and marketing analytics, and for security analytics. I expected it to be copy and paste. It wasn't. The definitions stayed identical, but almost every <em>example</em> had to change, and a few concepts flipped meaning completely. An outlier you would quietly clip in a marketing report is the exact thing a security team exists to catch.</p>
+    <p>That is the point of this post. If you lead a business, a product or an engineering team, you don't need a new toolkit for each problem. You need to know how to <strong>translate</strong> the one toolkit into your domain's questions.</p>
+    <div class="legend">
+      <span class="pill saas" style="--c:var(--saas)"><i></i>SaaS product company</span>
+      <span class="pill" style="--c:var(--stk)"><i></i>Indian stock market</span>
+      <span class="pill" style="--c:var(--mkt)"><i></i>Product &amp; marketing</span>
+      <span class="pill" style="--c:var(--sec)"><i></i>Security analytics</span>
+    </div>
+  </section>
+
+  <section id="lens">
+    <h2><span class="num">02</span>One concept, four readings</h2>
+    <p>Pick a concept. Each card shows how it shows up in one world, and the question it actually answers there.</p>
+  </section>
+</main>
+
+<div class="wrap" style="max-width:1048px">
+  <div class="lens" id="lens-box">
+    <div class="pick" id="lens-pick" role="group" aria-label="Choose a concept"></div>
+    <p class="def" id="lens-def"></p>
+    <div class="quad" id="lens-quad" aria-live="polite"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section id="rosetta" style="padding-top:24px">
+    <h2><span class="num">03</span>The translation table</h2>
+    <p>The same idea, one row at a time. Read across a row to see how a concept you know from one domain maps to another.</p>
+  </section>
+</main>
+
+<div class="wrap" style="max-width:1108px">
+  <div class="tbl xl">
+    <table>
+      <thead><tr><th>Concept</th><th class="saas">SaaS</th><th class="stk">Stock market</th><th class="mkt">Product &amp; marketing</th><th class="sec">Security</th></tr></thead>
+      <tbody>
+        <tr><td>Mean</td><td>Average seats or API calls per account</td><td>Average daily return</td><td>Average onboarding time, pages per session</td><td>Average bandwidth per employee</td></tr>
+        <tr><td>Median</td><td>Typical customer bill when a few enterprise deals skew the mean</td><td>Typical day's move, ignoring crash days</td><td>Typical session length when tabs are left open for hours</td><td>Typical alert resolution time, not dragged by forgotten tickets</td></tr>
+        <tr><td>Std deviation</td><td>How predictable cloud cost and usage are</td><td>Volatility: the risk of the stock itself</td><td>How consistent ad spend and engagement are</td><td>How stable firewall blocks are, so a jump stands out</td></tr>
+        <tr><td>Skewness</td><td>Power users log in 50× more than most</td><td>Negative skew: crashes are sharper than rallies</td><td>A few users send most referrals</td><td>A few accounts under brute force show hundreds of failures</td></tr>
+        <tr><td>Kurtosis</td><td>Launch-day and outage spikes</td><td>Fat tails: crashes far more often than a bell curve predicts</td><td>Viral campaign spikes</td><td>Rare, huge packets during exfiltration</td></tr>
+        <tr><td>Outlier (|z| &gt; 3)</td><td>Bot, abuse, or your next enterprise upsell</td><td>News shock, or an unadjusted stock split</td><td>Campaign success, or click fraud</td><td>The incident you are looking for</td></tr>
+        <tr><td>Target variable</td><td><code>Is_Churned</code></td><td>Next-day return, or up/down</td><td><code>Converted</code></td><td><code>Is_Malicious</code></td></tr>
+        <tr><td>Engineered feature</td><td><code>Account_Age_Days</code>, days since last login</td><td>Log returns, RSI, %B, delivery %</td><td><code>Conversion_Time_Days</code></td><td><code>Session_Duration_Seconds</code>, domain age</td></tr>
+        <tr><td>One-hot encoding</td><td>Plan tier, industry</td><td>Sector, F&amp;O expiry week</td><td>Channel, campaign, job title</td><td>Protocol, port class</td></tr>
+        <tr><td>Hypothesis test</td><td>Did the new trial page lift conversion?</td><td>Is this series stationary (ADF)?</td><td>Did variant B beat A?</td><td>Did the new firewall rule reduce breaches?</td></tr>
+        <tr><td>Time series</td><td>MRR and cash-flow forecast</td><td>Price, volatility and VaR forecasts</td><td>Traffic and sign-up forecast</td><td>Alert volume and SOC staffing forecast</td></tr>
+        <tr><td>Embeddings</td><td>Group feature requests by meaning</td><td>News and filing sentiment</td><td>Cluster reviews and survey text</td><td>Group log lines like "unauthorized" and "invalid credentials"</td></tr>
+        <tr><td>Distance (L2)</td><td>Similar-account recommendations</td><td>Stocks that move alike</td><td>Lookalike audiences</td><td>How far behavior is from normal</td></tr>
+        <tr><td>Heatmap</td><td>Feature usage by plan</td><td>Sector correlation matrix</td><td>Funnel drop-off by channel</td><td>Login attempts by hour and country</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<main class="wrap">
+  <section id="spike">
+    <h2><span class="num">04</span>Same spike, opposite reactions</h2>
+    <p>Here is the clearest example of why domain matters. Take one chart: a steady metric, then one point at four standard deviations above normal. Every glossary flags it the same way, with a z-score above +4. What happens next is completely different.</p>
+
+    <figure class="chart">
+      <svg viewBox="0 0 720 250" role="img" aria-label="Line chart of a steady daily metric with one spike more than four standard deviations above the mean">
+        <rect x="40" y="128" width="660" height="48" fill="#e2e9f8" opacity=".7"/>
+        <line x1="40" y1="152" x2="700" y2="152" stroke="#2b55b8" stroke-dasharray="4 4" stroke-width="1.2"/>
+        <line x1="40" y1="56" x2="700" y2="56" stroke="#a8322d" stroke-dasharray="2 5" stroke-width="1.2"/>
+        <text x="696" y="146" text-anchor="end" font-size="12" fill="#2b55b8">mean</text>
+        <text x="696" y="122" text-anchor="end" font-size="12" fill="#5b6474">±1σ band</text>
+        <text x="696" y="50" text-anchor="end" font-size="12" fill="#a8322d">z = +4</text>
+        <polyline fill="none" stroke="#1d2433" stroke-width="2" stroke-linejoin="round" points="40,150 70,156 100,146 130,154 160,149 190,158 220,151 250,145 280,155 310,150 340,148 370,157 400,152 430,30 460,147 490,153 520,149 550,156 580,150 610,146 640,154 670,151 700,149"/>
+        <circle cx="430" cy="30" r="6" fill="#a8322d"/>
+        <text x="444" y="34" font-size="13" font-weight="600" fill="#1d2433">one day, z ≈ +5</text>
+        <line x1="40" y1="210" x2="700" y2="210" stroke="#e7dfcf"/>
+        <text x="40" y="232" font-size="12" fill="#5b6474">day 1</text>
+        <text x="700" y="232" text-anchor="end" font-size="12" fill="#5b6474">day 23</text>
+      </svg>
+      <figcaption>The statistics are identical in every domain. The response is not.</figcaption>
+    </figure>
+
+    <div class="grid4">
+      <div class="tip c saas"><h4>SaaS: investigate, maybe sell</h4><p>An account's API calls spike. It could be a runaway integration or a scraping bot to rate-limit, or a customer who has outgrown their plan. Ops and sales should both see it.</p></div>
+      <div class="tip c stk"><h4>Markets: check the data first</h4><p>A price gap could be real news, a results surprise or a circuit breaker. It could also be a split or bonus issue nobody adjusted for. Clean before you trade on it.</p></div>
+      <div class="tip c mkt"><h4>Marketing: celebrate, then exclude</h4><p>A campaign went viral, or a bot farm clicked your ads. Either way, keep it out of baseline averages or every future campaign will look like a failure.</p></div>
+      <div class="tip c sec"><h4>Security: this is the job</h4><p>A burst of connections or firewall blocks is a possible DDoS, brute force or exfiltration. Never clip it. Alert, triage and keep the raw record.</p></div>
+    </div>
+
+    <div class="callout red">
+      <p><strong>The rule:</strong> textbooks teach you to "treat" outliers by removing or capping them. That is a business decision, not a statistical one. In averages and forecasts, outliers are noise. In fraud, abuse and security, outliers <em>are</em> the signal. Write your outlier policy per use case, and write it down.</p>
+    </div>
+  </section>
+
+  <section id="functions">
+    <h2><span class="num">05</span>ML across a SaaS company</h2>
+    <p>This is where it gets practical. In a SaaS business like the hotel software I have worked on, every team already sits on labelled data and an obvious question. Here is how the glossary concepts map to each function: the question, what you predict, and the concepts that do the work.</p>
+
+    <div class="fmap">
+      <div class="fn"><div class="who">Business &amp; leadership<small>retention · revenue</small></div><div><p><b>Which customers will cancel next quarter, and how much revenue rides on them?</b> Predict <code>Is_Churned</code> from usage trends, ticket history, seats and days since last login. Forecast MRR with time series, and report <em>median</em> revenue per account alongside the mean so a few large customers don't hide the real picture.</p><div class="tags"><span>classification</span><span>median vs mean</span><span>time series</span><span>cohorts</span></div></div></div>
+      <div class="fn"><div class="who">Product<small>adoption · roadmap</small></div><div><p><b>Did the new feature change behavior, and what are customers asking for?</b> Test launches with A/B experiments, not opinions. Cluster feature requests and reviews with embeddings, so "slow dashboard" and "reports take forever" land in the same bucket.</p><div class="tags"><span>hypothesis testing</span><span>embeddings</span><span>funnels</span><span>skewness</span></div></div></div>
+      <div class="fn"><div class="who">Engineering &amp; infrastructure<small>cost · capacity · reliability</small></div><div><p><b>How much capacity next month, and is this latency normal?</b> Forecast load and cloud cost. Track p50 and p95 latency with box plots and IQR instead of averages. Low variance in spend is a budget you can plan around. A rising one is an early warning.</p><div class="tags"><span>forecasting</span><span>IQR</span><span>std deviation</span><span>anomaly detection</span></div></div></div>
+      <div class="fn"><div class="who">Security &amp; compliance<small>fraud · intrusion · audit</small></div><div><p><b>Is this login, payment or request abnormal?</b> Score sessions by distance from normal behavior, and flag failed-login bursts and odd geographies. For payments under PCI DSS, card-testing fraud shows up as skewed, high-kurtosis bursts of small transactions.</p><div class="tags"><span>outliers as signal</span><span>z-scores</span><span>L2 distance</span><span>classification</span></div></div></div>
+      <div class="fn"><div class="who">Marketing<small>channels · campaigns</small></div><div><p><b>Which channel actually pays back?</b> Compare channels with a heatmap of funnel drop-off. Test creative with proper significance, not two days of data. One-hot encode channel and campaign so models can learn from them.</p><div class="tags"><span>A/B testing</span><span>one-hot encoding</span><span>heatmaps</span><span>attribution</span></div></div></div>
+      <div class="fn"><div class="who">Customer acquisition &amp; sales<small>leads · trials</small></div><div><p><b>Which trials and leads will convert?</b> Predict <code>Converted</code> from pages visited, role, property size and days since last email open. Use lookalike scoring (L2 distance to your best customers) to point sales at the right accounts first.</p><div class="tags"><span>lead scoring</span><span>feature engineering</span><span>lookalikes</span><span>imputation</span></div></div></div>
+      <div class="fn"><div class="who">Support &amp; success<small>tickets · health</small></div><div><p><b>Which tickets need a human now, and which accounts are drifting?</b> Route tickets by meaning with embeddings. Watch the median response time, not the mean. Feed ticket trends back into the churn model, since a quiet customer is not always a happy one.</p><div class="tags"><span>embeddings</span><span>median</span><span>health scores</span><span>time series</span></div></div></div>
+      <div class="fn"><div class="who">Finance<small>cash · risk</small></div><div><p><b>What is the worst plausible month?</b> Borrow from markets: a value-at-risk style view of revenue and cloud cost tells you how much buffer you need, instead of planning on the average month.</p><div class="tags"><span>forecasting</span><span>VaR thinking</span><span>fat tails</span></div></div></div>
+    </div>
+  </section>
+
+  <section id="markets">
+    <h2><span class="num">06</span>What traders teach everyone else</h2>
+    <p>The stock market glossary was the odd one out. Its vocabulary is different (volatility, VIX, OHLCV, Bollinger Bands, VaR) because markets punish sloppy data science immediately and in money. Four of its lessons travel well.</p>
+    <div class="grid2">
+      <div class="tip c stk"><h4>Look-ahead bias</h4><p>A backtest that sees tomorrow's price looks brilliant and fails live. A churn model that uses "cancellation reason" or post-renewal tickets as features does the same thing. Only use what you would have known at prediction time.</p></div>
+      <div class="tip c stk"><h4>Walk-forward validation</h4><p>Don't shuffle time. Train on the past, test on the next period, roll forward. Random K-fold on time-ordered data leaks the future into every fold, for churn and alert models alike.</p></div>
+      <div class="tip c stk"><h4>Corporate actions = data events</h4><p>An unadjusted split looks like a 50% crash. In SaaS, the same thing happens with plan migrations, price changes, currency switches and tracking changes. Adjust history, or your model learns a crash that never happened.</p></div>
+      <div class="tip c stk"><h4>Fat tails and regimes</h4><p>Returns are not normally distributed, and neither are outages, traffic or fraud. Traders watch India VIX to know the regime has changed. Product teams should treat launch weeks, holidays and peak season as regimes too.</p></div>
+    </div>
+    <div class="callout teal"><p><strong>Stationarity in plain words:</strong> most models assume tomorrow behaves like yesterday. Prices don't, so traders model returns instead. Growing SaaS metrics don't either. Model growth rates or per-account ratios, not raw totals that drift upward every month.</p></div>
+  </section>
+
+  <section id="playbook">
+    <h2><span class="num">07</span>A starter playbook</h2>
+    <p>Whichever world you are in, the order of work is the same.</p>
+    <ol class="steps">
+      <li><b>Write the business question as a target variable.</b> "Reduce churn" isn't a model. <code>Is_Churned within 90 days</code> is.</li>
+      <li><b>Describe before you predict.</b> Mean <em>and</em> median, spread, skew. If the mean and median disagree, find out who is pulling the average.</li>
+      <li><b>Decide your outlier policy by domain.</b> Is an outlier noise to cap or the signal to catch? Write it down before modelling.</li>
+      <li><b>Clean with domain events in mind.</b> Holidays, migrations, splits, outages and tracking changes all look like real behavior to a model.</li>
+      <li><b>Engineer features people would recognise.</b> Days since last login, conversion time, session length. Explainable features build trust with the teams who act on them.</li>
+      <li><b>Validate in time order.</b> Walk forward. No peeking at the future.</li>
+      <li><b>Prove impact with a test.</b> A hypothesis test or controlled rollout before you claim the model worked.</li>
+    </ol>
+  </section>
+
+  <section id="glossaries">
+    <h2><span class="num">08</span>The full glossaries</h2>
+    <p>Each glossary covers the same ground: core statistics, data types and variables, cleaning and imputation, feature engineering, probability and hypothesis testing, linear algebra and embeddings, the Python libraries, and 20+ chart types. Every term has a plain-English explanation, a technical definition, a data science use, a machine learning use and a real-world scenario for that domain.</p>
+    <div class="refs">
+      <a class="saas" style="--c:var(--saas)" href="https://github.com/JigneshRana/IHFC-Leaning/blob/Master/definitions_saas.md"><b>SaaS Product Company</b><span>Churn, MRR, usage, subscription analytics</span></a>
+      <a style="--c:var(--stk)" href="https://github.com/JigneshRana/IHFC-Leaning/blob/Master/definitions_indian_stock_market.md"><b>Indian Stock Market</b><span>Volatility, VIX, indicators, backtesting, algorithms</span></a>
+      <a style="--c:var(--mkt)" href="https://github.com/JigneshRana/IHFC-Leaning/blob/Master/definitions_product_marketing.md"><b>Product &amp; Marketing Analytics</b><span>Funnels, conversion, adoption, channels</span></a>
+      <a style="--c:var(--sec)" href="https://github.com/JigneshRana/IHFC-Leaning/blob/Master/definitions_security.md"><b>Security Analytics</b><span>Intrusion, anomalies, phishing, malware</span></a>
+    </div>
+    <p>The takeaway is simple. Learn the toolkit once. Then spend your effort on the part no course can teach: knowing what a number <em>means</em> in your business, and what you will do when it moves.</p>
+  </section>
+
+  <footer>© 2026 Jignesh A. Rana. Written from my own study notes and sixteen years of building SaaS. <a href="../">Back to home</a>.</footer>
+</main>
+
+<script>
+(() => {
+  const C = [
+    { k:"Standard deviation", d:"<b>How spread out values are around the average.</b> Low means predictable, high means erratic.",
+      saas:["Monthly cloud cost averages $15,000 with a $200 deviation, so budgeting is predictable.","Can we plan around this cost?"],
+      stk:["Historical volatility: the deviation of daily returns. A stock moving 5% a day carries far more risk than one that barely moves.","How risky is this position?"],
+      mkt:["Ad spend varies by only $50 a month: highly consistent. Erratic weekly visits signal unstable engagement.","Is engagement steady?"],
+      sec:["Firewall blocks average 1,200 a day with a deviation of 15, so a jump to 10,000 is clearly a DDoS.","Is this an attack?"] },
+    { k:"Median vs mean", d:"<b>The middle value versus the arithmetic average.</b> The median ignores the few extreme values that pull the mean.",
+      saas:["99 startups pay $50 and one enterprise pays $50,000: the mean is $550, the median $50.","What does a typical customer pay?"],
+      stk:["A few crash days drag the average return down. The median day tells you what normal trading looks like.","What is a normal day?"],
+      mkt:["90 users spend 2 minutes, 10 leave tabs open for 20 hours: the mean is 120 minutes, the median 2.","How long do people really stay?"],
+      sec:["Alert resolution averages 3 hours, but the median is 5 minutes: a few low-priority tickets skew it.","How fast do we really respond?"] },
+    { k:"Outliers", d:"<b>Points far from the rest</b>, often flagged with |z| &gt; 3 or outside 1.5 × IQR. What you do with them depends on the domain.",
+      saas:["An account's API calls hit z = +4. A bot, a broken integration or an upsell?","Block, fix or sell?"],
+      stk:["A sudden 50% price drop. A real crash, or an unadjusted stock split?","Is the data even right?"],
+      mkt:["Campaign sign-ups jump to z = +4. Viral success, or click fraud?","Keep it out of the baseline?"],
+      sec:["Connections spike to z = +4. In security the outlier is the incident itself.","Alert now."] },
+    { k:"Skewness", d:"<b>Lopsidedness of a distribution.</b> Right skew means a long tail of large values. Usually fixed with a log transform before modelling.",
+      saas:["Most users log in 1–2 times a week; a few power users log in 50+ times.","Who are our power users?"],
+      stk:["Daily returns are often negatively skewed: falls are sharper than rises.","How bad can the downside get?"],
+      mkt:["Most users send zero referrals; a handful send dozens.","Who are our advocates?"],
+      sec:["Most staff make 0–1 failed logins; an account under brute force shows hundreds.","Which account is under attack?"] },
+    { k:"Target variable", d:"<b>The thing a model predicts.</b> The same model shape (binary classification) answers four very different questions.",
+      saas:["<code>Is_Churned</code>: 1 if the customer cancelled, 0 if they renewed.","Who will cancel?"],
+      stk:["Next-day direction or return, predicted only from information available before the open.","Up or down tomorrow?"],
+      mkt:["<code>Converted</code>: 1 if the lead bought, 0 if they dropped out.","Which leads should sales call?"],
+      sec:["<code>Is_Malicious</code>: 1 if the file or email is a threat.","Block or allow?"] },
+    { k:"Feature engineering", d:"<b>Turning raw columns into signals a model can use</b>, usually from dates, counts and ratios.",
+      saas:["From start and end dates to <code>Account_Age_Days</code>, plus days since last login.","How engaged and how established?"],
+      stk:["Prices become log returns, RSI, Bollinger %B and delivery percentage.","Is this a real trend?"],
+      mkt:["From campaign start and conversion dates to <code>Conversion_Time_Days</code>.","How long does buying take?"],
+      sec:["Login and logout times become <code>Session_Duration_Seconds</code>; sender domain becomes domain age.","Does this look like phishing?"] },
+    { k:"Hypothesis testing", d:"<b>Deciding whether a change is real or chance</b>, with a null hypothesis, an alternative and a p-value.",
+      saas:["A new trial page: does conversion beat 3.0%? p = 0.01, so ship it.","Did the change work?"],
+      stk:["ADF test: is this series stationary enough to model? Prices usually fail; returns usually pass.","Can we model this at all?"],
+      mkt:["Variant B versus A on sign-ups, with enough sample size before calling it.","Which creative wins?"],
+      sec:["A new firewall rule: is the breach rate now below 0.05%? p = 0.01, so keep it.","Did the control help?"] },
+    { k:"Time series", d:"<b>Data ordered in time</b>, used to forecast what comes next. Order matters, so never shuffle it.",
+      saas:["Forecast next month's MRR and cash-flow needs.","How much will we bill?"],
+      stk:["Forecast volatility and value at risk, using walk-forward validation only.","How much could we lose?"],
+      mkt:["Forecast traffic and sign-ups around seasons and launches.","What should next month look like?"],
+      sec:["Forecast next week's alert volume to staff the SOC.","How many analysts on shift?"] },
+    { k:"Embeddings", d:"<b>Turning text into vectors</b> so that similar meanings sit close together (Word2Vec and its successors).",
+      saas:["\"Fast dashboard\" and \"responsive UI\" map close together, so feature requests group themselves.","What are customers asking for?"],
+      stk:["News, filings and earnings calls become sentiment features, beyond what price history shows.","What is the market reading?"],
+      mkt:["Reviews and survey answers cluster into themes.","Why do people love or leave us?"],
+      sec:["\"Unauthorized access\" and \"invalid credentials\" logs cluster into one incident.","Is this one attack or many?"] }
+  ];
+  const pick = document.getElementById('lens-pick'), def = document.getElementById('lens-def'), quad = document.getElementById('lens-quad');
+  const D = [["saas","SaaS"],["stk","Stock market"],["mkt","Product & marketing"],["sec","Security"]];
+  function show(i){
+    [...pick.children].forEach((b,j)=>b.setAttribute('aria-pressed', j===i));
+    const c = C[i]; def.innerHTML = c.d;
+    quad.innerHTML = D.map(([k,n]) => `<div class="q ${k}"><h5>${n}</h5><p>${c[k][0]}</p><span class="ask">${c[k][1]}</span></div>`).join('');
+  }
+  C.forEach((c,i)=>{ const b=document.createElement('button'); b.type='button'; b.textContent=c.k; b.onclick=()=>show(i); pick.appendChild(b); });
+  show(0);
+})();
+</script>
+</body>
+</html>
